@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil Comportamental — Instituto Diego Moreira</title>
+  <meta name="description" content="Mapeie seu perfil comportamental completo: DISC, Jung, Spranger, Liderança e Mapa da Ansiedade exclusivo do Método RESET.">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --primary:    #0A1628;
+      --bg:         #F8F6F1;
+      --surface:    #EDE8DF;
+      --accent:     #C9963D;
+      --text:       #0A1628;
+      --muted:      #6B7280;
+      --line:       #DDD8CF;
+      --white:      #FFFFFF;
+      --r-soft:     6px;
+      --r-card:     12px;
+      --r-pill:     999px;
+      --disc-D:     #DC2626;
+      --disc-I:     #F59E0B;
+      --disc-S:     #059669;
+      --disc-C:     #2563EB;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', Georgia, serif; }
+    em { font-style: italic; }
+
+    /* ── Layout ── */
+    .container { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--primary);
+      padding: 18px 0 0;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 18px;
+    }
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      color: var(--accent);
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .logo-sub {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.72rem;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    #headerProgress {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      display: none;
+    }
+    .progress-track { height: 4px; background: rgba(255,255,255,0.08); }
+    .progress-fill  { height: 100%; background: var(--accent); width: 0; transition: width .5s ease; }
+
+    /* ── Screens ── */
+    .screen { display: none; padding: 52px 0 96px; }
+    .screen.active { display: block; animation: fadeUp .35s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Intro ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--line);
+      padding: 5px 14px; border-radius: var(--r-pill);
+      font-size: 0.75rem; color: var(--muted); margin-bottom: 24px;
+    }
+    .badge-dot { width:7px; height:7px; background:var(--accent); border-radius:50%; }
+    .intro-title {
+      font-size: clamp(2rem, 5.5vw, 3rem);
+      line-height: 1.15; margin-bottom: 18px;
+    }
+    .intro-title em { color: var(--accent); }
+    .intro-lead {
+      font-size: 1rem; color: var(--muted); line-height: 1.75;
+      max-width: 580px; margin-bottom: 36px;
+    }
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+      gap: 14px; margin-bottom: 36px;
+    }
+    .intro-item {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); padding: 18px;
+    }
+    .intro-item-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .intro-item h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 600; margin-bottom: 3px;
+    }
+    .intro-item p { font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
+    .intro-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 24px; }
+    .intro-meta span { margin-right: 16px; }
+
+    /* ── Buttons ── */
+    .btn-accent {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: var(--primary);
+      border: none; padding: 15px 36px;
+      border-radius: var(--r-soft); font-family:'Inter',sans-serif;
+      font-size: .95rem; font-weight: 600; cursor: pointer;
+      transition: opacity .2s; text-decoration: none;
+    }
+    .btn-accent:hover { opacity: .88; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary); color: var(--bg);
+      border: none; padding: 15px 36px;
+      border-radius: var(--r-soft); font-family:'Inter',sans-serif;
+      font-size: .95rem; font-weight: 500; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--text);
+      border: 1px solid var(--line); padding: 13px 28px;
+      border-radius: var(--r-soft); font-family:'Inter',sans-serif;
+      font-size: .88rem; cursor: pointer; transition: border-color .2s;
+    }
+    .btn-outline:hover { border-color: var(--primary); }
+    .btn-outline.light {
+      color: rgba(255,255,255,.75); border-color: rgba(255,255,255,.25);
+    }
+    .btn-outline.light:hover { border-color: rgba(255,255,255,.6); }
+    .btn-row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+
+    /* ── Section header ── */
+    .section-eyebrow {
+      font-size: .72rem; text-transform: uppercase;
+      letter-spacing: .12em; color: var(--accent);
+      font-weight: 600; margin-bottom: 6px;
+    }
+    .section-title { font-size: 1.75rem; margin-bottom: 10px; }
+    .section-desc  { font-size: .9rem; color: var(--muted); line-height: 1.65; }
+    .section-header { margin-bottom: 36px; }
+
+    /* ── Questions ── */
+    .q-block    { margin-bottom: 28px; }
+    .q-text     { font-size: .95rem; font-weight: 500; line-height: 1.55; margin-bottom: 14px; }
+    .q-num      { color: var(--accent); font-weight: 700; }
+    .q-divider  { border: none; border-top: 1px solid var(--line); margin: 24px 0; }
+
+    /* choice options */
+    .options { display: grid; gap: 9px; }
+    .opt {
+      background: var(--white); border: 2px solid var(--line);
+      border-radius: var(--r-card); padding: 13px 16px;
+      cursor: pointer; display: flex; align-items: flex-start; gap: 11px;
+      transition: border-color .18s, background .18s; text-align: left;
+    }
+    .opt:hover               { border-color: var(--accent); background: #FFFBF5; }
+    .opt.selected            { border-color: var(--accent); background: #FFF8EC; }
+    .opt-letter {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: var(--surface); color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .78rem; font-weight: 700; transition: background .18s, color .18s;
+    }
+    .opt.selected .opt-letter { background: var(--accent); color: white; }
+    .opt-text { font-size: .875rem; color: var(--text); line-height: 1.5; }
+
+    /* likert */
+    .likert-q    { font-size: .9rem; font-weight: 500; line-height: 1.55; margin-bottom: 11px; }
+    .likert-dim  { font-size: .72rem; color: var(--muted); margin-left: 6px; font-weight: 400; }
+    .likert-row  { display: flex; gap: 6px; }
+    .likert-btn {
+      flex: 1; height: 42px;
+      background: var(--white); border: 2px solid var(--line);
+      border-radius: var(--r-soft); cursor: pointer;
+      font-size: .9rem; font-weight: 600; color: var(--muted);
+      transition: border-color .18s, background .18s, color .18s;
+    }
+    .likert-btn:hover                { border-color: var(--accent); color: var(--accent); }
+    .likert-btn.selected             { background: var(--accent); border-color: var(--accent); color: white; }
+    .likert-labels {
+      display: flex; justify-content: space-between;
+      font-size: .7rem; color: var(--muted); margin-top: 5px;
+    }
+
+    /* ── Nav ── */
+    .quiz-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
+    }
+    .quiz-counter { font-size: .82rem; color: var(--muted); }
+    .error-bar {
+      background: #FEF2F2; border: 1px solid #FECACA;
+      color: #DC2626; padding: 11px 15px; border-radius: var(--r-soft);
+      font-size: .82rem; margin-top: 14px; display: none;
+    }
+
+    /* ── Results hero ── */
+    .results-hero {
+      background: var(--primary); padding: 52px 0 44px;
+      margin: -52px 0 44px;
+    }
+    .results-hero .eyebrow {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    .results-hero h1 { font-size: 2rem; color: white; margin-bottom: 8px; }
+    .results-hero p  { color: rgba(255,255,255,.55); font-size: .88rem; }
+
+    /* ── Result cards ── */
+    .results-stack { display: grid; gap: 22px; }
+    .r-card {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); padding: 26px;
+    }
+    .r-card-head {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+    }
+    .r-icon  { font-size: 1.5rem; }
+    .r-title { font-size: 1.1rem; line-height: 1.3; }
+    .r-sub   { font-size: .72rem; color: var(--muted); margin-top: 1px; }
+    .r-tag {
+      margin-left: auto;
+      background: var(--surface); border: 1px solid var(--line);
+      padding: 4px 12px; border-radius: var(--r-pill);
+      font-size: .75rem; color: var(--muted); white-space: nowrap;
+    }
+
+    /* score bars (generic) */
+    .score-row {
+      display: grid; gap: 11px; margin-bottom: 4px;
+    }
+    .score-item {
+      display: grid;
+      grid-template-columns: 28px 1fr 38px;
+      align-items: center; gap: 10px;
+    }
+    .score-item.wide {
+      grid-template-columns: 80px 1fr 38px;
+    }
+    .s-label { font-weight: 700; font-size: .88rem; }
+    .s-label.muted { font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .s-track {
+      background: var(--surface); border-radius: var(--r-pill);
+      height: 10px; overflow: hidden;
+    }
+    .s-fill {
+      height: 100%; border-radius: var(--r-pill);
+      transition: width 1s ease;
+    }
+    .s-pct { font-size: .8rem; color: var(--muted); text-align: right; }
+
+    /* disc profile box */
+    .profile-box {
+      margin-top: 14px; padding: 14px 16px;
+      background: var(--surface); border-radius: var(--r-soft);
+    }
+    .profile-box strong { font-size: .88rem; display: block; margin-bottom: 4px; }
+    .profile-box p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+
+    /* jung */
+    .jung-type { font-size: 3rem; font-weight: 600; color: var(--accent); font-family: 'Playfair Display', serif; margin-bottom: 4px; }
+    .jung-desc { font-size: .85rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .jung-dims { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .jung-dim  {
+      background: var(--surface); border-radius: var(--r-soft); padding: 12px;
+    }
+    .jung-dim-lbl { font-size: .7rem; color: var(--muted); margin-bottom: 3px; }
+    .jung-dim-val { font-size: .88rem; font-weight: 600; }
+
+    /* spranger */
+    .sp-list { display: grid; gap: 10px; }
+    .sp-item { display: flex; align-items: center; gap: 10px; }
+    .sp-rank { font-weight: 700; color: var(--accent); font-size: 1rem; width: 22px; }
+    .sp-name { font-size: .875rem; font-weight: 500; flex: 1; }
+    .sp-track { width: 120px; background: var(--surface); height: 8px; border-radius: var(--r-pill); }
+    .sp-fill  { height: 100%; background: var(--accent); border-radius: var(--r-pill); }
+    .sp-score { font-size: .78rem; color: var(--muted); width: 32px; text-align: right; }
+
+    /* anxiety */
+    .anx-center { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 14px; }
+    .anx-num    { font-size: 3.2rem; font-weight: 600; font-family: 'Playfair Display', serif; }
+    .anx-lbl    { font-size: .9rem; color: var(--muted); }
+    .anx-bar-track { height: 14px; background: var(--surface); border-radius: var(--r-pill); overflow: hidden; margin-bottom: 14px; }
+    .anx-bar-fill  { height: 100%; border-radius: var(--r-pill); transition: width 1.2s ease; }
+    .anx-desc { font-size: .85rem; color: var(--muted); line-height: 1.65; text-align: center; }
+
+    /* beliefs */
+    .beliefs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .belief-box   {
+      background: var(--surface); border-radius: var(--r-soft);
+      padding: 16px; text-align: center;
+    }
+    .belief-num { font-size: 1.9rem; font-weight: 600; font-family: 'Playfair Display', serif; color: var(--accent); line-height: 1; }
+    .belief-max { font-size: .88rem; color: var(--muted); }
+    .belief-lbl { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+    .belief-warning {
+      margin-top: 14px; padding: 12px 14px;
+      background: #FFF8EC; border: 1px solid #F59E0B40;
+      border-radius: var(--r-soft); font-size: .82rem; color: var(--muted); line-height: 1.5;
+    }
+
+    /* CTA */
+    .cta-card {
+      background: var(--primary); border-radius: var(--r-card);
+      padding: 40px; color: white; text-align: center;
+    }
+    .cta-eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); margin-bottom: 10px; }
+    .cta-card h2 { font-size: 1.75rem; color: white; margin-bottom: 14px; }
+    .cta-card h2 em { color: var(--accent); }
+    .cta-card p  { color: rgba(255,255,255,.65); font-size: .9rem; line-height: 1.7; margin-bottom: 28px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Print ── */
+    @media print {
+      .site-header, .quiz-nav, .cta-card { display: none; }
+      .screen { padding: 0; }
+      .r-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .intro-grid        { grid-template-columns: 1fr 1fr; }
+      .jung-dims         { grid-template-columns: 1fr; }
+      .beliefs-grid      { grid-template-columns: 1fr; }
+      .cta-row           { flex-direction: column; }
+      .quiz-nav          { flex-direction: column-reverse; gap: 12px; }
+      .score-item.wide   { grid-template-columns: 64px 1fr 36px; }
+      .sp-track          { width: 70px; }
+      .btn-accent, .btn-primary { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="site-header">
+  <div class="container">
+    <div class="header-row">
+      <div>
+        <div class="logo-text">Instituto Diego Moreira<span class="logo-sub">Método RESET da Ansiedade</span></div>
+      </div>
+      <div id="headerProgress"></div>
+    </div>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ INTRO ═══════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <div class="container">
+    <div class="badge"><span class="badge-dot"></span> Mapeamento Comportamental Completo</div>
+
+    <h1 class="intro-title">
+      Descubra seu<br><em>Perfil de Líder</em>
+    </h1>
+
+    <p class="intro-lead">
+      Um diagnóstico profundo em 6 dimensões científicas — DISC, Jung, Spranger, Estilos de Liderança, Mapa da Ansiedade e Crenças de Identidade. Leva cerca de <strong>15 minutos</strong>. Resultados instantâneos.
+    </p>
+
+    <div class="intro-grid">
+      <div class="intro-item">
+        <div class="intro-item-icon">🎯</div>
+        <h4>DISC</h4>
+        <p>Comportamento natural em 4 dimensões</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-icon">🧠</div>
+        <h4>Tipos de Jung</h4>
+        <p>Funcionamento psicológico genuíno</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-icon">⚖️</div>
+        <h4>Valores Spranger</h4>
+        <p>Hierarquia dos seus valores reais</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-icon">👑</div>
+        <h4>Liderança</h4>
+        <p>Seu estilo natural de liderar</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-icon">🔥</div>
+        <h4>Mapa da Ansiedade</h4>
+        <p>Exclusivo do Método RESET</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-icon">💎</div>
+        <h4>Crenças</h4>
+        <p>Identidade, capacidade e abundância</p>
+      </div>
+    </div>
+
+    <p class="intro-meta">
+      <span>✓ 66 perguntas</span>
+      <span>✓ ~15 minutos</span>
+      <span>✓ Resultado instantâneo</span>
+      <span>✓ 100% privado</span>
+    </p>
+
+    <div class="btn-row">
+      <button class="btn-accent" onclick="startQuiz()">Iniciar mapeamento →</button>
+      <button class="btn-outline" onclick="loadSaved()">Continuar onde parei</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ QUIZ ═══════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="container">
+    <div class="section-header" id="sectionHeader"></div>
+    <div id="questionsArea"></div>
+    <div class="error-bar" id="errorBar">Responda todas as perguntas desta seção antes de continuar.</div>
+    <div class="quiz-nav">
+      <button class="btn-outline" id="btnBack" onclick="prevSection()">← Voltar</button>
+      <span class="quiz-counter" id="quizCounter">Seção 1 de 7</span>
+      <button class="btn-primary" id="btnNext" onclick="nextSection()">Próxima seção →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ RESULTS ═══════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-hero">
+    <div class="container">
+      <p class="eyebrow">Análise completa</p>
+      <h1>Seu Perfil Comportamental</h1>
+      <p>Baseado nas suas respostas · <span id="resultDate"></span></p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="results-stack" id="resultsStack"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════
+const SECTIONS = [
+  {
+    id:'disc', eyebrow:'DISC — Marston (1928)', icon:'🎯',
+    title:'Comportamento Natural',
+    desc:'Responda com base em como você realmente se comporta no trabalho — não como gostaria de ser, mas como age naturalmente.',
+    type:'c4',
+    questions:[
+      { t:'Quando precisa tomar uma decisão importante, você...', o:['Decide rápido e age — mesmo sem todas as informações','Conversa com várias pessoas e busca o apoio do time','Pesa cada aspecto com cuidado antes de se posicionar','Analisa dados e cria critérios sólidos antes de decidir'] },
+      { t:'Numa reunião com conflito, você tende a...', o:['Confrontar diretamente e resolver logo','Usar humor e empatia para aliviar a tensão','Ouvir todos os lados e buscar consenso','Identificar onde estão os erros e apontar com dados'] },
+      { t:'Seu time te descreve como...', o:['Firme, direto e orientado a resultado','Animado, inspirador e cheio de energia','Calmo, paciente e fácil de trabalhar','Detalhista, criterioso e altamente confiável'] },
+      { t:'Quando um projeto atrasa, você...', o:['Cobra o responsável e traça novo plano imediatamente','Motiva o time e reacende o entusiasmo coletivo','Mantém a calma, suporta o time e reorganiza os processos','Revisa tudo, identifica a causa raiz e documenta'] },
+      { t:'Seu maior medo no trabalho é...', o:['Perder o controle ou ser dominado por outros','Ser ignorado ou perder a aprovação do grupo','Mudanças bruscas que quebram a rotina e os processos','Errar por falta de informação ou análise insuficiente'] },
+      { t:'Seu ponto forte que todos reconhecem é...', o:['Capacidade de agir e decidir com rapidez','Comunicação e capacidade de inspirar pessoas','Constância, lealdade e suporte genuíno ao time','Precisão, análise e qualidade consistente do trabalho'] },
+      { t:'Quando precisa vender uma ideia, você...', o:['Apresenta com convicção e força, direto ao ponto','Usa histórias, emoção e conexão pessoal','Mostra como vai funcionar na prática, passo a passo','Apresenta dados, evidências e análise detalhada'] },
+      { t:'Seu ritmo de trabalho ideal é...', o:['Alta velocidade, múltiplos projetos em paralelo','Variado, com bastante interação e novidades constantes','Estável, previsível, com processos e rotinas claros','Sistemático, com tempo suficiente para análise e revisão'] },
+      { t:'Quando erra, você...', o:['Assume, corrige e segue em frente imediatamente','Fica incomodado com a imagem que transmitiu','Sente muito — preocupa-se com o impacto nas relações','Investiga a fundo o que saiu errado para não repetir'] },
+      { t:'Como você prefere receber feedback?', o:['Direto, rápido e focado no que precisa melhorar','De forma encorajadora, reconhecendo o que foi bem','Com cuidado, em particular e com tempo para processar','Com dados e exemplos específicos que justifiquem cada ponto'] },
+      { t:'Na liderança do time, você prioriza...', o:['Resultados e metas acima de tudo','Engajamento, moral e motivação da equipe','Coesão, harmonia e estabilidade do grupo','Processos corretos, qualidade e conformidade com padrões'] },
+      { t:'Você se reconhece mais em...', o:['"Fazer acontecer — rápido e com impacto real"','"Inspirar e conectar pessoas em torno de um propósito"','"Ser a âncora que mantém tudo funcionando"','"Garantir que cada detalhe esteja correto"'] }
+    ]
+  },
+  {
+    id:'jung', eyebrow:'Tipos Psicológicos — Jung', icon:'🧠',
+    title:'Tipo Psicológico',
+    desc:'Em cada par, escolha a opção que mais descreve seu modo natural de ser — não o ideal, mas o genuíno.',
+    type:'c2',
+    questions:[
+      { t:'Eu recarrego minha energia...', o:['Em grupos, eventos e conversas — pessoas me energizam','Em silêncio e momentos solo — preciso de quietude para restaurar'] },
+      { t:'Quando processo uma decisão, costumo...', o:['Pensar em voz alta — as ideias surgem enquanto falo','Processar internamente primeiro — só falo com clareza formada'] },
+      { t:'Em termos de rede de contatos, prefiro...', o:['Muitas conexões variadas — tenho energia para novas pessoas','Poucas amizades profundas — qualidade acima de quantidade'] },
+      { t:'Em reuniões e tomada de decisão, prefiro...', o:['Ao vivo — o calor da discussão me inspira e energiza','Por escrito antes — receber a pauta e pensar com antecedência'] },
+      { t:'Ao analisar um problema, confio mais em...', o:['Dados concretos, experiências passadas e fatos verificáveis','Intuição, padrões ocultos e possibilidades ainda não mapeadas'] },
+      { t:'Meu foco natural está...', o:['No presente — o que é, o que existe e está provado agora','No futuro — o que pode ser, cenários e possibilidades novas'] },
+      { t:'Ao receber uma instrução, prefiro...', o:['Instruções claras, precisas e detalhadas — sei exatamente o que fazer','Entender o conceito geral e ter liberdade para adaptar o caminho'] },
+      { t:'Em um projeto, valorizo mais...', o:['A abordagem testada e comprovada — segurança no processo','A inovação e o novo — mesmo sem garantia de resultado'] },
+      { t:'Ao tomar decisões difíceis, priorizo...', o:['Lógica e objetividade — mesmo que a resposta doa','O impacto emocional nas pessoas envolvidas'] },
+      { t:'Ao dar uma crítica, você...', o:['Foca no que precisa melhorar — direto e preciso','Cuida muito de como a pessoa vai receber a mensagem'] },
+      { t:'Para mim, ser justo significa...', o:['Tratar com equidade e clareza — mesmo sendo desconfortável','Considerar o contexto emocional e individual de cada pessoa'] },
+      { t:'Na persuasão, convenci mais com...', o:['Argumentos racionais, dados e lógica estruturada','Conexão emocional, histórias e valores compartilhados'] },
+      { t:'Em relação à organização do dia, prefiro...', o:['Tudo planejado com antecedência — detesto surpresas','Deixar espaço para adaptação e oportunidades espontâneas'] },
+      { t:'Em relação a prazos, você...', o:['Entrega sempre no dia — prazo é compromisso sagrado','Funciona melhor com a pressão próxima ao limite'] },
+      { t:'O que te dá mais bem-estar no dia a dia?', o:['Dia estruturado, tarefas concluídas, lista cumprida','Espontaneidade, liberdade e flexibilidade de percurso'] },
+      { t:'Você prefere...', o:['Fechar as questões com clareza e seguir em frente','Manter opções abertas o máximo possível — o contexto pode mudar'] }
+    ]
+  },
+  {
+    id:'spranger', eyebrow:'Hierarquia de Valores — Spranger', icon:'⚖️',
+    title:'Valores Reais',
+    desc:'Avalie cada afirmação de 1 (discordo totalmente) a 5 (concordo totalmente) com sinceridade. Não há respostas certas ou erradas.',
+    type:'likert',
+    questions:[
+      { t:'Buscar conhecimento e entender profundamente como as coisas funcionam é algo central para mim.', dim:'Teórico' },
+      { t:'Prefiro saber o porquê das coisas antes de agir — teoria e compreensão antes da prática.', dim:'Teórico' },
+      { t:'Avalio minhas decisões principalmente pelo retorno prático que trazem — resultado concreto é o critério.', dim:'Econômico' },
+      { t:'Resultado financeiro e crescimento patrimonial são um dos meus principais motivadores.', dim:'Econômico' },
+      { t:'A estética, a harmonia visual e a qualidade de forma importam muito para mim no trabalho e na vida.', dim:'Estético' },
+      { t:'Valorizo a expressão criativa e a beleza nos projetos — como algo é apresentado importa tanto quanto o conteúdo.', dim:'Estético' },
+      { t:'Me realizo profundamente quando posso ajudar e impactar pessoas de forma direta e concreta.', dim:'Social' },
+      { t:'Servir a outros e contribuir para o bem coletivo guia decisões importantes da minha vida.', dim:'Social' },
+      { t:'Influenciar decisões e ter poder de impacto em organizações é muito importante para mim.', dim:'Político' },
+      { t:'Conquistar posições de liderança e reconhecimento profissional é um motivador real e legítimo.', dim:'Político' },
+      { t:'Busco um propósito maior para além dos resultados materiais — algo que transcende o sucesso comum.', dim:'Transcendente' },
+      { t:'A espiritualidade, o significado profundo da vida ou a conexão com algo maior me move genuinamente.', dim:'Transcendente' }
+    ]
+  },
+  {
+    id:'leadership', eyebrow:'Hersey & Blanchard — Liderança Situacional', icon:'👑',
+    title:'Estilo de Liderança',
+    desc:'Escolha a opção que melhor descreve como você naturalmente age como líder — não o que seria ideal, mas o que é real.',
+    type:'c4',
+    questions:[
+      { t:'Com um colaborador novo e sem experiência, você...', o:['Dá instruções claras e acompanha de perto cada passo','Ensina, explica e dá bastante feedback técnico','Pergunta como ele está se sentindo e oferece suporte emocional','Dá autonomia e confia que ele vai descobrir o caminho'] },
+      { t:'Com um profissional experiente mas desmotivado, você...', o:['Cobra mais resultado e define metas claras e firmes','Conversa, entende o que está acontecendo e reorienta com coaching','Escuta com atenção, reconhece conquistas e fortalece a confiança','Dá um projeto desafiador com total autonomia'] },
+      { t:'Em crise, você naturalmente...', o:['Assume o comando, define o plano e lidera a execução','Reúne o time para encontrar soluções juntos','Mantém o grupo unido e garante apoio emocional','Delega para quem sabe mais sobre o problema específico'] },
+      { t:'Você acredita que líderes devem, acima de tudo...', o:['Definir com clareza o que esperam de cada pessoa','Desenvolver cada pessoa para seu próximo nível','Criar um ambiente seguro para o time crescer e errar','Confiar no time e deixar as pessoas brilharem com autonomia'] },
+      { t:'Quando um resultado não veio, você primeiro...', o:['Analisa o que falhou no processo e corrige imediatamente','Conversa com cada pessoa sobre o que aprender com o erro','Garante que o time não se sinta culpado ou desmotivado','Devolve a responsabilidade para quem estava à frente do projeto'] },
+      { t:'Para você, a melhor equipe é aquela que...', o:['Executa com precisão o que foi definido','Está em constante crescimento e aprendizado coletivo','Trabalha com harmonia, confiança e colaboração genuína','É autônoma e não precisa de supervisão constante'] },
+      { t:'Seu time diria que você é um líder...', o:['Claro, firme e totalmente orientado a resultado','Coach, parceiro genuíno de desenvolvimento','Humano, próximo, acessível e sempre disponível','Confiante, que dá espaço real para a equipe crescer'] },
+      { t:'Na tomada de decisão estratégica, você...', o:['Decide, comunica e cobra execução','Decide depois de ouvir e discutir com o time','Busca consenso para que todos se sintam parte','Delega a decisão para quem está mais perto do problema'] }
+    ]
+  },
+  {
+    id:'anxiety', eyebrow:'Método RESET — Exclusivo', icon:'🔥',
+    title:'Mapa da Ansiedade',
+    desc:'Avalie de 1 (raramente/nunca) a 5 (frequentemente/sempre). Este é seu diagnóstico honesto — quanto mais verdadeiro, mais útil o resultado.',
+    type:'likert',
+    questions:[
+      { t:'A ansiedade afeta minha capacidade de liderar com clareza, firmeza e presença.', dim:'Liderança' },
+      { t:'A ansiedade interfere na qualidade das minhas relações em casa — com cônjuge, filhos ou família.', dim:'Relações' },
+      { t:'Reajo de forma desproporcional em situações de pressão — estallo, me fecho ou me paraliso.', dim:'Reatividade' },
+      { t:'Carrego um peso invisível mesmo quando, aparentemente, tudo está bem e sob controle.', dim:'Peso oculto' },
+      { t:'Já tentei resolver a ansiedade por outros caminhos, mas os resultados foram temporários.', dim:'Histórico' },
+      { t:'Percebo padrões negativos se repetindo na minha vida ou no negócio — como um script interno que se repete.', dim:'Padrões' },
+      { t:'Acredito que minha ansiedade tem raízes em padrões que recebi na infância ou na minha formação.', dim:'Origem' },
+      { t:'Estou aberto a explorar o que está no inconsciente para reprogramar esses padrões de uma vez por todas.', dim:'Prontidão' }
+    ]
+  },
+  {
+    id:'beliefs', eyebrow:'Autoliderança — Crenças de Identidade', icon:'🧩',
+    title:'Crenças de Identidade',
+    desc:'Avalie de 1 (discordo totalmente) a 5 (concordo totalmente). Responda o que é real hoje, não o que deseja que fosse.',
+    type:'likert',
+    questions:[
+      { t:'Acredito que sou capaz de resolver qualquer desafio que apareça no meu negócio ou vida pessoal.', dim:'Capacidade' },
+      { t:'Mereço plenamente os resultados que estou buscando — sem culpa e sem autopunição.', dim:'Merecimento' },
+      { t:'Sou o líder que minha família e meu negócio precisam — agora, não no futuro.', dim:'Identidade' },
+      { t:'Consigo ter alto desempenho profissional sem sacrificar minha saúde e minhas relações pessoais.', dim:'Equilíbrio' },
+      { t:'Posso ser firme e forte no trabalho e ainda me vulnerabilizar em casa — sem contradição.', dim:'Integridade' },
+      { t:'Minha identidade e autoestima independem dos meus resultados externos.', dim:'Autoestima' }
+    ]
+  },
+  {
+    id:'abundance', eyebrow:'Crenças Financeiras — Abundância', icon:'💎',
+    title:'Abundância e Merecimento',
+    desc:'Avalie de 1 (discordo totalmente) a 5 (concordo totalmente). Este é seu mapa de crenças sobre prosperidade.',
+    type:'likert',
+    questions:[
+      { t:'Acredito genuinamente que dinheiro e abundância estão disponíveis e acessíveis para mim.', dim:'Disponibilidade' },
+      { t:'Mereço cobrar o que meu trabalho e minha expertise realmente valem — sem culpa ou hesitação.', dim:'Valor' },
+      { t:'Meu sucesso financeiro pode crescer continuamente sem comprometer minha integridade ou meus valores.', dim:'Expansão' },
+      { t:'Quando penso em riqueza e prosperidade, a primeira emoção que sinto é de possibilidade — não de culpa ou medo.', dim:'Emoção base' }
+    ]
+  }
+];
+
+const KEYS = ['disc','jung','spranger','leadership','anxiety','beliefs','abundance'];
+const DISC_SIZE = [12,16,12,8,8,6,4];
+
+const DISC_INFO = {
+  D:{ name:'Dominante', color:'#DC2626',
+      desc:'Você é orientado a resultado, decisivo e direto. Tem alta tolerância ao risco e age rapidamente. Pode ser percebido como impaciente, mas seu instinto de movimento é um ativo poderoso de liderança.' },
+  I:{ name:'Influente',  color:'#F59E0B',
+      desc:'Você inspira, conecta e energiza pessoas. É otimista, comunicativo e carismático. Pode dispersar em detalhes, mas sua capacidade de engajar times é um diferencial estratégico raro.' },
+  S:{ name:'Estável',    color:'#059669',
+      desc:'Você é a âncora do time — confiável, consistente e colaborativo. Prefere ambientes previsíveis e relacionamentos profundos. Sua lealdade e constância constroem organizações sólidas.' },
+  C:{ name:'Criterioso', color:'#2563EB',
+      desc:'Você garante qualidade, analisa com profundidade e minimiza erros. Sistemático e perfeccionista, pode ser lento em decidir, mas suas entregas têm o mais alto padrão de precisão.' }
+};
+
+const LEADERSHIP_INFO = {
+  0:{ name:'Diretivo', icon:'⚡', desc:'Você lidera com clareza e firmeza, definindo expectativas e cobrando resultados. Forte em situações de crise e com times iniciantes que precisam de direção clara.' },
+  1:{ name:'Treinador (Coach)', icon:'🎓', desc:'Você desenvolve pessoas, orientando e dando feedback constante. Forte no crescimento individual e na formação de novos líderes dentro do time.' },
+  2:{ name:'Apoiador', icon:'🤝', desc:'Você constrói relações, cria ambiente seguro e apoia emocionalmente. Forte na coesão de times, no engajamento e na retenção de talentos.' },
+  3:{ name:'Delegador', icon:'🚀', desc:'Você confia no time, delega com autonomia e foca em visão e metas. Forte com profissionais experientes e times maduros que operam com alta autonomia.' }
+};
+
+const JUNG_DESC = {
+  INTJ:'O Arquiteto — Visionário estratégico que combina intuição com análise rigorosa. Independente, determinado, com padrões elevados e orientado ao longo prazo.',
+  INTP:'O Lógico — Inovador intelectual que ama teorias e possibilidades. Analítico, objetivo e curioso. Prefere entender profundamente antes de agir.',
+  ENTJ:'O Comandante — Líder nato que identifica ineficiências e organiza o caminho para a solução. Assertivo, estratégico e orientado a resultado.',
+  ENTP:'O Debatedor — Inovador ágil que desafia o status quo. Engenhoso, expressivo e energizado por desafios intelectuais.',
+  INFJ:'O Visionário — Idealista com visão de longo prazo. Principista, decisivo e apaixonado por causar impacto significativo em pessoas.',
+  INFP:'O Mediador — Idealista criativo que busca autenticidade acima de tudo. Empático, reflexivo e fiel aos seus valores mais profundos.',
+  ENFJ:'O Protagonista — Líder carismático e inspirador. Altruísta, confiável e genuinamente orientado a desenvolver o potencial das pessoas.',
+  ENFP:'O Ativista — Espírito criativo e curioso, sempre buscando conexões profundas. Energético, otimista e motivado por propósito.',
+  ISTJ:'O Logístico — Executor confiável, detalhista e metódico. Comprometido com responsabilidades, processos e valores tradicionais.',
+  ISFJ:'O Defensor — Dedicado e cuidadoso, sempre presente para quem importa. Confiável, observador e orientado a servir.',
+  ESTJ:'O Executivo — Administrador excelente, focado em ordem, processos e resultados. Direto, honesto e determinado.',
+  ESFJ:'O Cônsul — Sociável, altruísta e atento às necessidades dos outros. Constrói harmonia e senso de pertencimento no grupo.',
+  ISTP:'O Virtuoso — Observador analítico e prático. Aprende com a experiência direta. Reservado mas extremamente eficiente.',
+  ISFP:'O Aventureiro — Sensível, flexível e com forte senso estético. Vive o presente com intensidade e autenticidade.',
+  ESTP:'O Empreendedor — Perspicaz e energético. Age primeiro e processa depois. Excelente em resolver crises com agilidade.',
+  ESFP:'O Animador — Espontâneo, dinâmico e entusiasta. Conecta pessoas e cria ambientes de alta energia e engajamento.'
+};
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let state = {
+  section: 0,
+  answers: {
+    disc:       new Array(12).fill(null),
+    jung:       new Array(16).fill(null),
+    spranger:   new Array(12).fill(null),
+    leadership: new Array(8).fill(null),
+    anxiety:    new Array(8).fill(null),
+    beliefs:    new Array(6).fill(null),
+    abundance:  new Array(4).fill(null)
+  }
+};
+
+// ════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function startQuiz() {
+  state.section = 0;
+  show('quiz');
+  showProgress(true);
+  render();
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem('reset_perfil');
+  if (!raw) { alert('Nenhum progresso salvo encontrado. Iniciando do começo.'); startQuiz(); return; }
+  try {
+    state = JSON.parse(raw);
+    show('quiz');
+    showProgress(true);
+    render();
+  } catch(e) { startQuiz(); }
+}
+
+function showProgress(on) {
+  document.getElementById('headerProgress').style.display = on ? 'block' : 'none';
+}
+
+function setProgress(pct) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('headerProgress').textContent = pct + '%';
+}
+
+function save() {
+  localStorage.setItem('reset_perfil', JSON.stringify(state));
+}
+
+function nextSection() {
+  const key = KEYS[state.section];
+  if (state.answers[key].some(a => a === null)) {
+    const bar = document.getElementById('errorBar');
+    bar.style.display = 'block';
+    bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+  document.getElementById('errorBar').style.display = 'none';
+  save();
+  if (state.section < SECTIONS.length - 1) {
+    state.section++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    buildResults();
+  }
+}
+
+function prevSection() {
+  if (state.section > 0) {
+    state.section--;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    show('intro');
+  }
+}
+
+// ════════════════════════════════════════════════════
+// RENDER SECTION
+// ════════════════════════════════════════════════════
+function render() {
+  const sec = SECTIONS[state.section];
+  const key = KEYS[state.section];
+  const total = SECTIONS.length;
+
+  document.getElementById('sectionHeader').innerHTML = `
+    <div class="section-eyebrow">${sec.icon} ${sec.eyebrow}</div>
+    <h2 class="section-title">${sec.title}</h2>
+    <p class="section-desc">${sec.desc}</p>
+  `;
+  document.getElementById('quizCounter').textContent = `Seção ${state.section + 1} de ${total}`;
+  document.getElementById('btnBack').style.display = state.section === 0 ? 'none' : '';
+  document.getElementById('btnNext').textContent = state.section === total - 1 ? 'Ver meu perfil →' : 'Próxima seção →';
+  document.getElementById('errorBar').style.display = 'none';
+  setProgress(Math.round((state.section / total) * 100));
+
+  const area = document.getElementById('questionsArea');
+  area.innerHTML = '';
+
+  if (sec.type === 'c4' || sec.type === 'c2') {
+    renderChoice(sec, key, area);
+  } else {
+    renderLikert(sec, key, area);
+  }
+}
+
+function renderChoice(sec, key, area) {
+  const letters = sec.type === 'c2' ? ['A','B'] : ['A','B','C','D'];
+  sec.questions.forEach((q, qi) => {
+    const sel = state.answers[key][qi];
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    block.innerHTML = `
+      <p class="q-text"><span class="q-num">${qi+1}.</span> ${q.t}</p>
+      <div class="options">
+        ${q.o.map((opt, oi) => `
+          <div class="opt${sel===oi?' selected':''}" onclick="pick('${key}',${qi},${oi})">
+            <div class="opt-letter">${letters[oi]}</div>
+            <div class="opt-text">${opt}</div>
+          </div>`).join('')}
+      </div>
+    `;
+    area.appendChild(block);
+    if (qi < sec.questions.length - 1) {
+      const hr = document.createElement('hr');
+      hr.className = 'q-divider';
+      area.appendChild(hr);
+    }
+  });
+}
+
+function renderLikert(sec, key, area) {
+  sec.questions.forEach((q, qi) => {
+    const sel = state.answers[key][qi];
+    const item = document.createElement('div');
+    item.className = 'q-block';
+    item.innerHTML = `
+      <p class="likert-q"><span class="q-num">${qi+1}.</span> ${q.t} <span class="likert-dim">${q.dim}</span></p>
+      <div class="likert-row">
+        ${[1,2,3,4,5].map(v=>`<button class="likert-btn${sel===v?' selected':''}" onclick="pick('${key}',${qi},${v})">${v}</button>`).join('')}
+      </div>
+      <div class="likert-labels"><span>Discordo totalmente</span><span>Concordo totalmente</span></div>
+    `;
+    area.appendChild(item);
+    if (qi < sec.questions.length - 1) {
+      const hr = document.createElement('hr');
+      hr.className = 'q-divider';
+      area.appendChild(hr);
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+// SELECTION HANDLERS
+// ════════════════════════════════════════════════════
+function pick(key, qi, val) {
+  state.answers[key][qi] = val;
+  document.getElementById('errorBar').style.display = 'none';
+
+  const area = document.getElementById('questionsArea');
+  const blocks = area.querySelectorAll('.q-block');
+  const block = blocks[qi];
+
+  const isLikert = typeof val === 'number' && val >= 1 && val <= 5 &&
+    SECTIONS[state.section].type === 'likert';
+
+  if (isLikert) {
+    block.querySelectorAll('.likert-btn').forEach((b, i) => {
+      b.classList.toggle('selected', i + 1 === val);
+    });
+  } else {
+    block.querySelectorAll('.opt').forEach((opt, i) => {
+      opt.classList.toggle('selected', i === val);
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════
+// CALCULATIONS
+// ════════════════════════════════════════════════════
+function calcDISC() {
+  const s = {D:0,I:0,S:0,C:0};
+  const m = ['D','I','S','C'];
+  state.answers.disc.forEach(a => { if (a !== null) s[m[a]]++; });
+  return s;
+}
+
+function calcJung() {
+  const pairs = [
+    {a:'E',b:'I',label:'Extroversão / Introversão'},
+    {a:'S',b:'N',label:'Sensação / Intuição'},
+    {a:'T',b:'F',label:'Pensamento / Sentimento'},
+    {a:'J',b:'P',label:'Julgamento / Percepção'}
+  ];
+  return pairs.map((p, i) => {
+    const slice = state.answers.jung.slice(i*4, i*4+4);
+    const aCount = slice.filter(x => x === 0).length;
+    const bCount = 4 - aCount;
+    return { ...p, winner: aCount >= bCount ? p.a : p.b, aScore: aCount, bScore: bCount };
+  });
+}
+
+function calcSpranger() {
+  const acc = {};
+  SECTIONS[2].questions.forEach((q, i) => {
+    const v = state.answers.spranger[i] || 0;
+    acc[q.dim] = (acc[q.dim] || 0) + v;
+  });
+  return Object.entries(acc)
+    .map(([name,score]) => ({name, score, max:10}))
+    .sort((a,b) => b.score - a.score);
+}
+
+function calcLeadership() {
+  const s = [0,0,0,0];
+  state.answers.leadership.forEach(a => { if (a !== null) s[a]++; });
+  const primary = s.indexOf(Math.max(...s));
+  const total = s.reduce((a,b) => a+b, 0);
+  return { scores: s, primary, total, info: LEADERSHIP_INFO[primary] };
+}
+
+function calcAnxiety() {
+  const sum = state.answers.anxiety.reduce((a,v) => a + (v||0), 0);
+  const pct = Math.round((sum / 40) * 100);
+  let level, desc, color;
+  if (pct <= 28)      { level='Leve';         color='#059669'; desc='A ansiedade tem impacto pequeno na sua liderança e relações. Você possui boa regulação emocional. O trabalho é de otimização para alto desempenho sustentável.'; }
+  else if (pct <= 52) { level='Moderada';      color='#D97706'; desc='A ansiedade aparece em situações de pressão e afeta algumas áreas da sua liderança. Há padrões identificáveis que respondem muito bem ao Método RESET.'; }
+  else if (pct <= 74) { level='Significativa'; color='#DC2626'; desc='A ansiedade tem impacto real na sua capacidade de liderar e nas suas relações. Os padrões são recorrentes e demandam intervenção profunda — não apenas gestão de sintomas.'; }
+  else                { level='Alta';          color='#7F1D1D'; desc='A ansiedade está controlando decisões importantes da sua vida. Este mapa indica um padrão enraizado que o Método RESET foi desenvolvido especificamente para tratar com garantia de resultado.'; }
+  return { sum, pct, level, color, desc };
+}
+
+function calcBeliefs() {
+  const b = state.answers.beliefs;
+  const ab = state.answers.abundance;
+  return {
+    capacidade:  { score:(b[0]||0)+(b[3]||0), max:10, label:'Crença em Capacidade' },
+    merecimento: { score:(b[1]||0)+(b[5]||0), max:10, label:'Senso de Merecimento' },
+    identidade:  { score:(b[2]||0)+(b[4]||0), max:10, label:'Identidade de Líder' },
+    abundancia:  { score:ab.reduce((s,v)=>s+(v||0),0), max:20, label:'Mentalidade de Abundância' }
+  };
+}
+
+// ════════════════════════════════════════════════════
+// BUILD RESULTS
+// ════════════════════════════════════════════════════
+function buildResults() {
+  setProgress(100);
+  show('results');
+  localStorage.removeItem('reset_perfil');
+
+  document.getElementById('resultDate').textContent =
+    new Date().toLocaleDateString('pt-BR', {day:'numeric',month:'long',year:'numeric'});
+
+  const disc       = calcDISC();
+  const jung       = calcJung();
+  const spranger   = calcSpranger();
+  const leadership = calcLeadership();
+  const anxiety    = calcAnxiety();
+  const beliefs    = calcBeliefs();
+
+  const jungType = jung.map(d => d.winner).join('');
+  const discTotal = Object.values(disc).reduce((a,b)=>a+b,0);
+  const discPrimary = Object.entries(disc).sort((a,b)=>b[1]-a[1])[0][0];
+
+  const stack = document.getElementById('resultsStack');
+  stack.innerHTML = '';
+
+  // 1. DISC
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">🎯</div>
+        <div><div class="r-title">Perfil DISC</div><div class="r-sub">Comportamento natural — Marston (1928)</div></div>
+        <div class="r-tag">${DISC_INFO[discPrimary].name}</div>
+      </div>
+      <div class="score-row">
+        ${['D','I','S','C'].map(l => {
+          const pct = Math.round(((disc[l]||0)/discTotal)*100);
+          return `
+            <div class="score-item">
+              <div class="s-label" style="color:${DISC_INFO[l].color}">${l}</div>
+              <div class="s-track"><div class="s-fill" style="width:${pct}%;background:${DISC_INFO[l].color}"></div></div>
+              <div class="s-pct">${pct}%</div>
+            </div>`;
+        }).join('')}
+      </div>
+      <div class="profile-box">
+        <strong>Perfil primário: ${discPrimary} — ${DISC_INFO[discPrimary].name}</strong>
+        <p>${DISC_INFO[discPrimary].desc}</p>
+      </div>
+    </div>
+  `;
+
+  // 2. Jung
+  const jungDesc = JUNG_DESC[jungType] || `Tipo ${jungType} — perfil único com características multifacetadas.`;
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">🧠</div>
+        <div><div class="r-title">Tipo Psicológico</div><div class="r-sub">Jung — 16 tipos</div></div>
+        <div class="r-tag">${jungType}</div>
+      </div>
+      <div class="jung-type">${jungType}</div>
+      <p class="jung-desc">${jungDesc}</p>
+      <div class="jung-dims">
+        ${jung.map(d => {
+          const winScore = d.winner === d.a ? d.aScore : d.bScore;
+          const winFull  = d.winner === d.a
+            ? ['Extrovertido','Sensação','Pensamento','Julgamento'][jung.indexOf(d)]
+            : ['Introvertido','Intuição','Sentimento','Percepção'][jung.indexOf(d)];
+          const labels = [
+            ['Extrovertido','Introvertido'],
+            ['Sensação','Intuição'],
+            ['Pensamento','Sentimento'],
+            ['Julgamento','Percepção']
+          ];
+          const idx = jung.indexOf(d);
+          const winLabel = d.winner === d.a ? labels[idx][0] : labels[idx][1];
+          return `
+            <div class="jung-dim">
+              <div class="jung-dim-lbl">${d.label}</div>
+              <div class="jung-dim-val">${d.winner} — ${winLabel} (${winScore}/4)</div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  // 3. Spranger
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">⚖️</div>
+        <div><div class="r-title">Hierarquia de Valores</div><div class="r-sub">Spranger — seus valores reais</div></div>
+      </div>
+      <div class="sp-list">
+        ${spranger.map((v,i) => `
+          <div class="sp-item">
+            <div class="sp-rank">${i+1}°</div>
+            <div class="sp-name">${v.name}</div>
+            <div class="sp-track"><div class="sp-fill" style="width:${(v.score/v.max)*100}%"></div></div>
+            <div class="sp-score">${v.score}/10</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+
+  // 4. Leadership
+  const lNames = ['Diretivo','Treinador','Apoiador','Delegador'];
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">${leadership.info.icon}</div>
+        <div><div class="r-title">Estilo de Liderança</div><div class="r-sub">Hersey & Blanchard — Liderança Situacional</div></div>
+        <div class="r-tag">${leadership.info.name}</div>
+      </div>
+      <div class="score-row" style="margin-bottom:14px;">
+        ${leadership.scores.map((s,i) => {
+          const pct = Math.round((s / leadership.total) * 100);
+          return `
+            <div class="score-item wide">
+              <div class="s-label muted">${lNames[i]}</div>
+              <div class="s-track"><div class="s-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+              <div class="s-pct">${pct}%</div>
+            </div>`;
+        }).join('')}
+      </div>
+      <div class="profile-box">
+        <strong>${leadership.info.icon} ${leadership.info.name}</strong>
+        <p>${leadership.info.desc}</p>
+      </div>
+    </div>
+  `;
+
+  // 5. Anxiety
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">🔥</div>
+        <div><div class="r-title">Mapa da Ansiedade</div><div class="r-sub">Exclusivo — Método RESET da Ansiedade</div></div>
+        <div class="r-tag" style="color:${anxiety.color};background:${anxiety.color}18;border-color:${anxiety.color}40">${anxiety.level}</div>
+      </div>
+      <div class="anx-center">
+        <div class="anx-num" style="color:${anxiety.color}">${anxiety.pct}%</div>
+        <div class="anx-lbl">Nível: <strong>${anxiety.level}</strong></div>
+      </div>
+      <div class="anx-bar-track">
+        <div class="anx-bar-fill" style="width:${anxiety.pct}%;background:${anxiety.color}"></div>
+      </div>
+      <p class="anx-desc">${anxiety.desc}</p>
+    </div>
+  `;
+
+  // 6. Beliefs
+  const bArr = Object.values(beliefs);
+  const weakest = [...bArr].sort((a,b) => (a.score/a.max)-(b.score/b.max))[0];
+  const weakPct = Math.round((weakest.score/weakest.max)*100);
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">🧩</div>
+        <div><div class="r-title">Crenças e Identidade</div><div class="r-sub">Autoliderança e mentalidade de abundância</div></div>
+      </div>
+      <div class="beliefs-grid">
+        ${bArr.map(b => `
+          <div class="belief-box">
+            <div class="belief-num">${b.score}<span class="belief-max">/${b.max}</span></div>
+            <div class="belief-lbl">${b.label}</div>
+          </div>`).join('')}
+      </div>
+      ${weakPct <= 55 ? `<div class="belief-warning">⚠️ <strong>${weakest.label}</strong> é sua maior área de desenvolvimento (${weakPct}%). Crenças nessa dimensão têm impacto direto nos seus resultados de liderança e nos seus relacionamentos.</div>` : ''}
+    </div>
+  `;
+
+  // 7. CTA
+  stack.innerHTML += `
+    <div class="cta-card">
+      <p class="cta-eyebrow">Próximo passo</p>
+      <h2>Seu perfil está <em>mapeado</em>.<br>E agora?</h2>
+      <p>
+        O Método RESET da Ansiedade foi desenvolvido por Diego Moreira — ex-Major do Exército que liderou mais de 50 homens, passou pelo burnout e encontrou o caminho de volta — para líderes que já construíram resultados mas carregam padrões inconscientes que limitam o próximo nível.<br><br>
+        <strong>100% de certeza de resultado.</strong> Agende uma conversa gratuita para entender o que o seu mapa revela.
+      </p>
+      <div class="cta-row">
+        <a class="btn-accent" href="https://wa.me/5532984254542?text=Ol%C3%A1%20Diego%2C%20acabei%20de%20fazer%20o%20mapeamento%20comportamental%20e%20quero%20entender%20o%20que%20ele%20revela." target="_blank">Quero minha sessão gratuita →</a>
+        <button class="btn-outline light" onclick="doShare()">Compartilhar resultado</button>
+        <button class="btn-outline light" onclick="window.print()">Salvar como PDF</button>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function doShare() {
+  if (navigator.share) {
+    navigator.share({ title: 'Meu Perfil Comportamental — Instituto Diego Moreira', url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => alert('Link copiado para a área de transferência.'));
+  }
+}
+</script>
+</body>
+</html>
