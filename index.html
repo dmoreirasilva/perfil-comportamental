@@ -350,6 +350,48 @@
       font-size: .75rem; color: var(--muted); margin-bottom: 24px; line-height: 1.5;
     }
 
+    /* ── Access / Login screen ── */
+    .access-card {
+      max-width: 460px;
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); padding: 40px 36px;
+      margin: 0 auto;
+    }
+    .access-lock {
+      font-size: 2.4rem; margin-bottom: 18px;
+    }
+    .access-card h2 { font-size: 1.6rem; margin-bottom: 8px; }
+    .access-card p  { font-size: .9rem; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+    .access-status {
+      padding: 14px 16px; border-radius: var(--r-soft);
+      font-size: .875rem; line-height: 1.55;
+      margin-bottom: 20px; display: none;
+    }
+    .access-status.pending  { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+    .access-status.approved { background: #ECFDF5; border: 1px solid #6EE7B7; color: #065F46; }
+    .access-status.done     { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+    .access-status.rejected { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
+    .access-status.error    { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
+    .access-spinner {
+      display: none; align-items: center; gap: 10px;
+      font-size: .875rem; color: var(--muted); margin-bottom: 16px;
+    }
+    .access-spinner.on { display: flex; }
+    .spin-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--line); border-top-color: var(--accent);
+      animation: spin .7s linear infinite; flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .access-request-form { display: none; border-top: 1px solid var(--line); padding-top: 20px; margin-top: 4px; }
+    .access-approved-form { display: none; border-top: 1px solid var(--line); padding-top: 20px; margin-top: 4px; }
+    .access-email-locked {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--r-soft); padding: 11px 14px;
+      font-size: .9rem; color: var(--muted);
+      margin-bottom: 18px;
+    }
+
     /* ── Print ── */
     @media print {
       .site-header, .quiz-nav, .cta-card { display: none; }
@@ -387,8 +429,78 @@
   </div>
 </header>
 
+<!-- ═══════════════════════ ACCESS / LOGIN ═══════════════════════ -->
+<div id="screen-access" class="screen active">
+  <div class="container" style="display:flex;align-items:center;justify-content:center;min-height:70vh">
+    <div class="access-card">
+      <div class="access-lock">🔐</div>
+      <h2>Acesso por autorização</h2>
+      <p>Este mapeamento é exclusivo. Digite seu e-mail para verificar o status do seu acesso ou solicitar uma vaga.</p>
+
+      <div class="form-group">
+        <label class="form-label">Seu e-mail</label>
+        <input type="email" id="accessEmail" class="form-input" placeholder="seu@email.com"
+               autocomplete="email" onkeydown="if(event.key==='Enter')checkAccess()">
+      </div>
+
+      <div class="access-spinner" id="accessSpinner">
+        <div class="spin-dot"></div> Verificando...
+      </div>
+
+      <div class="access-status pending" id="statusPending">
+        ⏳ <strong>Aguardando autorização.</strong> Diego Moreira ainda não liberou seu acesso. Você receberá um aviso quando estiver disponível.
+      </div>
+      <div class="access-status approved" id="statusApproved">
+        ✅ <strong>Acesso liberado!</strong> Preencha seus dados abaixo para iniciar o mapeamento.
+      </div>
+      <div class="access-status done" id="statusDone">
+        📋 <strong>Você já realizou este mapeamento.</strong> Entre em contato com Diego Moreira para mais informações.
+      </div>
+      <div class="access-status rejected" id="statusRejected">
+        🚫 <strong>Acesso não autorizado.</strong> Entre em contato com Diego Moreira para mais informações.
+      </div>
+      <div class="access-status error" id="statusError"></div>
+
+      <button class="btn-accent" id="btnCheckAccess" onclick="checkAccess()" style="width:100%;justify-content:center">Verificar acesso →</button>
+
+      <!-- Aprovado: preenche nome e whatsapp -->
+      <div class="access-approved-form" id="approvedForm">
+        <div class="access-email-locked" id="approvedEmailDisplay"></div>
+        <div class="form-group">
+          <label class="form-label">Nome completo *</label>
+          <input type="text" id="accessName" class="form-input" placeholder="Seu nome completo" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp com DDD *</label>
+          <input type="tel" id="accessWhatsapp" class="form-input" placeholder="(32) 99999-9999" autocomplete="tel">
+        </div>
+        <div class="error-bar" id="approvedError">Preencha todos os campos para continuar.</div>
+        <button class="btn-accent" onclick="startFromAccess()" style="width:100%;justify-content:center;margin-top:8px">Iniciar mapeamento →</button>
+      </div>
+
+      <!-- Não encontrado: solicitar acesso -->
+      <div class="access-request-form" id="requestForm">
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;margin-top:0">
+          E-mail não encontrado. Solicite acesso preenchendo seus dados:
+        </p>
+        <div class="form-group">
+          <label class="form-label">Nome completo *</label>
+          <input type="text" id="reqName" class="form-input" placeholder="Seu nome completo" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp com DDD *</label>
+          <input type="tel" id="reqWhatsapp" class="form-input" placeholder="(32) 99999-9999" autocomplete="tel">
+        </div>
+        <div class="error-bar" id="requestError">Preencha todos os campos.</div>
+        <button class="btn-accent" onclick="requestAccess()" style="width:100%;justify-content:center;margin-top:8px">Solicitar acesso →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════ INTRO ═══════════════════════ -->
-<div id="screen-intro" class="screen active">
+<div id="screen-intro" class="screen">
   <div class="container">
     <div class="badge"><span class="badge-dot"></span> Mapeamento Comportamental Completo</div>
 
@@ -512,6 +624,130 @@
 // CONFIGURATION — cole a URL do Apps Script aqui
 // ════════════════════════════════════════════════════
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzhjucxgpyQDC7DBFz9aJqdki4IQIrkeqQI_MgBmoOoNc052eOF6WJL9RUqCMxRe76S/exec';
+
+// ════════════════════════════════════════════════════
+// ACCESS CONTROL
+// ════════════════════════════════════════════════════
+let accessGrantedEmail = '';
+
+function hideAllAccessStatus() {
+  ['statusPending','statusApproved','statusDone','statusRejected','statusError'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('requestForm').style.display   = 'none';
+  document.getElementById('approvedForm').style.display  = 'none';
+}
+
+async function checkAccess() {
+  const email = document.getElementById('accessEmail').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const err = document.getElementById('statusError');
+    err.textContent = 'Digite um e-mail válido.';
+    err.style.display = 'block';
+    return;
+  }
+  hideAllAccessStatus();
+  document.getElementById('accessSpinner').classList.add('on');
+  document.getElementById('btnCheckAccess').disabled = true;
+
+  try {
+    const res  = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'check_access', email })
+    });
+    const text = await res.text();
+    const json = JSON.parse(text);
+    const status = json.status || 'erro';
+
+    document.getElementById('accessSpinner').classList.remove('on');
+    document.getElementById('btnCheckAccess').disabled = false;
+
+    if (status === 'aprovado') {
+      document.getElementById('statusApproved').style.display = 'block';
+      document.getElementById('approvedEmailDisplay').textContent = '📧 ' + email;
+      if (json.nome)     document.getElementById('accessName').value    = json.nome;
+      if (json.whatsapp) document.getElementById('accessWhatsapp').value = json.whatsapp;
+      document.getElementById('approvedForm').style.display = 'block';
+      accessGrantedEmail = email;
+    } else if (status === 'pendente') {
+      document.getElementById('statusPending').style.display = 'block';
+    } else if (status === 'concluido') {
+      document.getElementById('statusDone').style.display = 'block';
+    } else if (status === 'rejeitado') {
+      document.getElementById('statusRejected').style.display = 'block';
+    } else {
+      // nao_encontrado or unknown → show request form
+      document.getElementById('requestForm').style.display = 'block';
+      document.getElementById('reqName').focus();
+    }
+  } catch(e) {
+    document.getElementById('accessSpinner').classList.remove('on');
+    document.getElementById('btnCheckAccess').disabled = false;
+    const err = document.getElementById('statusError');
+    err.textContent = 'Erro de conexão. Tente novamente.';
+    err.style.display = 'block';
+  }
+}
+
+async function requestAccess() {
+  const email    = document.getElementById('accessEmail').value.trim();
+  const nome     = document.getElementById('reqName').value.trim();
+  const whatsapp = document.getElementById('reqWhatsapp').value.trim();
+  const errBar   = document.getElementById('requestError');
+
+  if (!nome || !whatsapp) {
+    errBar.textContent = 'Preencha todos os campos.';
+    errBar.style.display = 'block';
+    return;
+  }
+  errBar.style.display = 'none';
+
+  const btn = event.target;
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'solicitar_acesso', email, nome, whatsapp })
+    });
+    const text = await res.text();
+    const json = JSON.parse(text);
+    hideAllAccessStatus();
+    document.getElementById('requestForm').style.display = 'none';
+    if (json.success || json.status === 'pendente') {
+      const pend = document.getElementById('statusPending');
+      pend.innerHTML = '⏳ <strong>Solicitação enviada!</strong> Diego Moreira avaliará seu pedido e você será notificado quando o acesso for liberado.';
+      pend.style.display = 'block';
+    } else if (json.status) {
+      // Already exists with some status
+      document.getElementById('statusPending').style.display = 'block';
+    }
+  } catch(e) {
+    btn.textContent = 'Solicitar acesso →';
+    btn.disabled = false;
+    errBar.textContent = 'Erro de conexão. Tente novamente.';
+    errBar.style.display = 'block';
+  }
+}
+
+function startFromAccess() {
+  const name     = document.getElementById('accessName').value.trim();
+  const whatsapp = document.getElementById('accessWhatsapp').value.trim();
+  const email    = accessGrantedEmail;
+  const errBar   = document.getElementById('approvedError');
+
+  if (!name || !whatsapp) {
+    errBar.textContent = 'Preencha todos os campos para continuar.';
+    errBar.style.display = 'block';
+    return;
+  }
+  errBar.style.display = 'none';
+  leadData = { name, email, whatsapp };
+  startQuiz();
+}
 
 // ════════════════════════════════════════════════════
 // DATA

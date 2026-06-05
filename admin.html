@@ -168,6 +168,40 @@
       font-size: .83rem; color: var(--muted); line-height: 1.6; margin-top: 14px;
     }
 
+    /* ── Tabs ── */
+    .tabs-bar {
+      display: flex; gap: 4px;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 28px;
+    }
+    .tab-btn {
+      padding: 10px 20px; border: none; background: transparent;
+      font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 500;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: color .18s, border-color .18s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Access badges */
+    .badge-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: var(--r-pill);
+      font-size: .73rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .badge-pendente  { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+    .badge-aprovado  { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
+    .badge-concluido { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+    .badge-rejeitado { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+    .btn-approve { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; padding: 5px 14px; border-radius: var(--r-soft); font-size: .8rem; font-weight: 600; cursor: pointer; transition: opacity .2s; }
+    .btn-approve:hover { opacity: .8; }
+    .btn-reject  { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; padding: 5px 14px; border-radius: var(--r-soft); font-size: .8rem; font-weight: 600; cursor: pointer; transition: opacity .2s; margin-left: 6px; }
+    .btn-reject:hover  { opacity: .8; }
+    #acessosTable .data-table th, #acessosTable .data-table td { font-size: .83rem; }
+
     /* ── Dashboard ── */
     .dash-wrap { padding: 36px 0 80px; }
     .dash-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
@@ -598,6 +632,15 @@ function doGet(e) {
         </div>
       </div>
 
+      <!-- Tabs -->
+      <div class="tabs-bar">
+        <button class="tab-btn active" id="tabBtnResultados" onclick="switchTab('resultados')">📋 Resultados</button>
+        <button class="tab-btn" id="tabBtnAcessos" onclick="switchTab('acessos')">🔐 Acessos <span id="pendingBadge" style="display:none;background:var(--accent);color:var(--primary);border-radius:999px;padding:1px 7px;font-size:.7rem;margin-left:4px;font-weight:700"></span></button>
+      </div>
+
+      <!-- Tab: Resultados -->
+      <div class="tab-panel active" id="tabResultados">
+
       <!-- Stats -->
       <div class="stats-row" id="statsRow">
         <div class="stat-card">
@@ -680,6 +723,47 @@ function doGet(e) {
           <div class="page-btns" id="paginationBtns"></div>
         </div>
       </div>
+
+    </div><!-- /tab-resultados -->
+
+      </div><!-- /tab-panel.active -->
+
+      <!-- Tab: Acessos -->
+      <div class="tab-panel" id="tabAcessos">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:4px">Controle de acesso</div>
+            <h3 style="font-size:1.1rem">Solicitações de acesso ao mapeamento</h3>
+          </div>
+          <button class="btn-dash outline" onclick="loadAcessos()">↻ Atualizar</button>
+        </div>
+
+        <div id="acessosLoading" style="display:none;padding:32px;text-align:center;color:var(--muted)">Carregando...</div>
+
+        <div id="acessosTable" class="table-wrap">
+          <table class="data-table" id="acessosDataTable">
+            <thead>
+              <tr>
+                <th>E-mail</th>
+                <th>Nome</th>
+                <th>WhatsApp</th>
+                <th>Status</th>
+                <th>Solicitado em</th>
+                <th>Aprovado em</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="acessosBody">
+              <tr><td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-icon">🔐</div>
+                  <p>Nenhuma solicitação ainda.</p>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div><!-- /tab-acessos -->
 
     </div>
   </div>
@@ -778,6 +862,109 @@ function openDashboard() {
   document.getElementById('btnLogout').style.display = 'block';
   showScreen('dash');
   loadData();
+  loadAcessos();
+}
+
+// ════════════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('tabBtn' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+// ACCESS MANAGEMENT
+// ════════════════════════════════════════════════════
+async function loadAcessos() {
+  const url   = sessionStorage.getItem('admin_url');
+  const token = sessionStorage.getItem('admin_token');
+  if (!url || !token) return;
+
+  document.getElementById('acessosLoading').style.display = 'block';
+  document.getElementById('acessosDataTable').style.display = 'none';
+
+  try {
+    const res  = await fetch(`${url}?token=${encodeURIComponent(token)}&action=acessos`);
+    const json = await res.json();
+    document.getElementById('acessosLoading').style.display = 'none';
+    document.getElementById('acessosDataTable').style.display = '';
+
+    if (json.error || !json.data) return;
+    renderAcessosTable(json.data);
+  } catch(e) {
+    document.getElementById('acessosLoading').style.display = 'none';
+    document.getElementById('acessosDataTable').style.display = '';
+  }
+}
+
+function renderAcessosTable(rows) {
+  const tbody = document.getElementById('acessosBody');
+  const pending = rows.filter(r => r['Status'] === 'pendente').length;
+
+  const badge = document.getElementById('pendingBadge');
+  if (pending > 0) {
+    badge.textContent = pending;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔐</div><p>Nenhuma solicitação ainda.</p></div></td></tr>`;
+    return;
+  }
+
+  // Sort: pendente first
+  rows.sort((a, b) => {
+    const order = {pendente:0, aprovado:1, concluido:2, rejeitado:3};
+    return (order[a['Status']] ?? 9) - (order[b['Status']] ?? 9);
+  });
+
+  tbody.innerHTML = rows.map(r => {
+    const status = r['Status'] || '';
+    const badgeHtml = `<span class="badge-status badge-${status}">${status}</span>`;
+    const canApprove = status === 'pendente' || status === 'rejeitado';
+    const canReject  = status === 'pendente' || status === 'aprovado';
+    const actions = [
+      canApprove ? `<button class="btn-approve" onclick="updateAccess('${r['Email']}','aprovar')">✓ Aprovar</button>` : '',
+      canReject  ? `<button class="btn-reject"  onclick="updateAccess('${r['Email']}','rejeitar')">✕ Rejeitar</button>` : ''
+    ].join('');
+    return `<tr>
+      <td>${r['Email'] || ''}</td>
+      <td>${r['Nome'] || ''}</td>
+      <td>${r['WhatsApp'] || ''}</td>
+      <td>${badgeHtml}</td>
+      <td style="white-space:nowrap">${r['DataSolicitacao'] || ''}</td>
+      <td style="white-space:nowrap">${r['DataAprovacao'] || ''}</td>
+      <td style="white-space:nowrap">${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateAccess(email, action) {
+  const url   = sessionStorage.getItem('admin_url');
+  const token = sessionStorage.getItem('admin_token');
+  if (!url || !token) return;
+
+  const actionKey = action === 'aprovar' ? 'aprovar_acesso' : 'rejeitar_acesso';
+  try {
+    const res  = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: actionKey, email, token })
+    });
+    const json = await res.json();
+    if (json.success) {
+      loadAcessos();
+    } else {
+      alert('Erro: ' + (json.error || 'Falha na operação'));
+    }
+  } catch(e) {
+    alert('Erro de conexão.');
+  }
 }
 
 // Auto-login if credentials saved
