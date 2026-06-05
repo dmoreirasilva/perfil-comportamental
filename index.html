@@ -494,35 +494,23 @@
 
       <button class="btn-accent" id="btnCheckAccess" onclick="checkAccess()" style="width:100%;justify-content:center">Verificar acesso →</button>
 
-      <!-- Aprovado: preenche nome e whatsapp -->
+      <!-- Aprovado: iniciar direto -->
       <div class="access-approved-form" id="approvedForm">
         <div class="access-email-locked" id="approvedEmailDisplay"></div>
-        <div class="form-group">
-          <label class="form-label">Nome completo *</label>
-          <input type="text" id="accessName" class="form-input" placeholder="Seu nome completo" autocomplete="name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">WhatsApp com DDD *</label>
-          <input type="tel" id="accessWhatsapp" class="form-input" placeholder="(32) 99999-9999" autocomplete="tel">
-        </div>
-        <div class="error-bar" id="approvedError">Preencha todos os campos para continuar.</div>
-        <button class="btn-accent" onclick="startFromAccess()" style="width:100%;justify-content:center;margin-top:8px">Iniciar mapeamento →</button>
+        <p style="font-size:.82rem;color:var(--muted);margin:12px 0 16px">Acesso liberado! Clique abaixo para iniciar seu mapeamento.</p>
+        <button class="btn-accent" onclick="startFromAccess()" style="width:100%;justify-content:center">Iniciar mapeamento →</button>
       </div>
 
       <!-- Não encontrado: solicitar acesso -->
       <div class="access-request-form" id="requestForm">
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;margin-top:0">
-          E-mail não encontrado. Solicite acesso preenchendo seus dados:
+          E-mail não encontrado. Solicite acesso:
         </p>
         <div class="form-group">
-          <label class="form-label">Nome completo *</label>
+          <label class="form-label">Seu nome *</label>
           <input type="text" id="reqName" class="form-input" placeholder="Seu nome completo" autocomplete="name">
         </div>
-        <div class="form-group">
-          <label class="form-label">WhatsApp com DDD *</label>
-          <input type="tel" id="reqWhatsapp" class="form-input" placeholder="(32) 99999-9999" autocomplete="tel">
-        </div>
-        <div class="error-bar" id="requestError">Preencha todos os campos.</div>
+        <div class="error-bar" id="requestError">Preencha seu nome.</div>
         <button class="btn-accent" onclick="requestAccess()" style="width:100%;justify-content:center;margin-top:8px">Solicitar acesso →</button>
       </div>
 
@@ -722,13 +710,12 @@ async function checkAccess() {
 }
 
 async function requestAccess() {
-  const email    = document.getElementById('accessEmail').value.trim();
-  const nome     = document.getElementById('reqName').value.trim();
-  const whatsapp = document.getElementById('reqWhatsapp').value.trim();
-  const errBar   = document.getElementById('requestError');
+  const email  = document.getElementById('accessEmail').value.trim();
+  const nome   = document.getElementById('reqName').value.trim();
+  const errBar = document.getElementById('requestError');
 
-  if (!nome || !whatsapp) {
-    errBar.textContent = 'Preencha todos os campos.';
+  if (!nome) {
+    errBar.textContent = 'Preencha seu nome.';
     errBar.style.display = 'block';
     return;
   }
@@ -742,7 +729,7 @@ async function requestAccess() {
     const res  = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'solicitar_acesso', email, nome, whatsapp })
+      body: JSON.stringify({ action: 'solicitar_acesso', email, nome, whatsapp: '' })
     });
     const text = await res.text();
     const json = JSON.parse(text);
@@ -765,19 +752,8 @@ async function requestAccess() {
 }
 
 function startFromAccess() {
-  const name     = document.getElementById('accessName').value.trim();
-  const whatsapp = document.getElementById('accessWhatsapp').value.trim();
-  const email    = accessGrantedEmail;
-  const errBar   = document.getElementById('approvedError');
-
-  if (!name || !whatsapp) {
-    errBar.textContent = 'Preencha todos os campos para continuar.';
-    errBar.style.display = 'block';
-    return;
-  }
-  errBar.style.display = 'none';
-  leadData = { name, email, whatsapp };
-  startQuiz();
+  leadData = { name: '', email: accessGrantedEmail, whatsapp: '' };
+  showScreen('screen-intro');
 }
 
 // ════════════════════════════════════════════════════
@@ -976,6 +952,10 @@ function show(id) {
 
 function showLeadForm() {
   show('lead');
+  if (leadData.email) {
+    const el = document.getElementById('leadEmail');
+    if (el) el.value = leadData.email;
+  }
 }
 
 function validateAndStart() {

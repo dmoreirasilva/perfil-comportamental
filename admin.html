@@ -746,7 +746,6 @@ function doGet(e) {
               <tr>
                 <th>E-mail</th>
                 <th>Nome</th>
-                <th>WhatsApp</th>
                 <th>Status</th>
                 <th>Solicitado em</th>
                 <th>Aprovado em</th>
@@ -935,7 +934,6 @@ function renderAcessosTable(rows) {
     return `<tr>
       <td>${r['Email'] || ''}</td>
       <td>${r['Nome'] || ''}</td>
-      <td>${r['WhatsApp'] || ''}</td>
       <td>${badgeHtml}</td>
       <td style="white-space:nowrap">${r['DataSolicitacao'] || ''}</td>
       <td style="white-space:nowrap">${r['DataAprovacao'] || ''}</td>
