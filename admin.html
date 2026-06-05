@@ -966,14 +966,13 @@ async function updateAccess(email, action) {
 }
 
 // Auto-login if credentials saved
+const _ADMIN_URL   = 'https://script.google.com/macros/s/AKfycbxQMrSyp_m6IizkxpUBGk1fgrNSdQeXdOOIiZq7sc6ll7LvmAkCEUUmffrkYdF05cUO/exec';
+const _ADMIN_TOKEN = 'RESETdiego2024';
+
 window.addEventListener('load', () => {
-  const url   = sessionStorage.getItem('admin_url');
-  const token = sessionStorage.getItem('admin_token');
-  if (url && token) {
-    document.getElementById('inputUrl').value   = url;
-    document.getElementById('inputToken').value = token;
-    openDashboard();
-  }
+  sessionStorage.setItem('admin_url',   _ADMIN_URL);
+  sessionStorage.setItem('admin_token', _ADMIN_TOKEN);
+  openDashboard();
 });
 
 // ════════════════════════════════════════════════════
