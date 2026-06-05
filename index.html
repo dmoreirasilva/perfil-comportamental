@@ -685,8 +685,6 @@ async function checkAccess() {
     if (status === 'aprovado') {
       document.getElementById('statusApproved').style.display = 'block';
       document.getElementById('approvedEmailDisplay').textContent = '📧 ' + email;
-      if (json.nome)     document.getElementById('accessName').value    = json.nome;
-      if (json.whatsapp) document.getElementById('accessWhatsapp').value = json.whatsapp;
       document.getElementById('approvedForm').style.display = 'block';
       accessGrantedEmail = email;
     } else if (status === 'pendente') {
