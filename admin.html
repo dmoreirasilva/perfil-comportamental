@@ -860,8 +860,12 @@ function openDashboard() {
   document.getElementById('btnSetup').style.display = 'block';
   document.getElementById('btnLogout').style.display = 'block';
   showScreen('dash');
+  switchTab('acessos');
   loadData();
   loadAcessos();
+  if (!window._acessosTimer) {
+    window._acessosTimer = setInterval(loadAcessos, 30000);
+  }
 }
 
 // ════════════════════════════════════════════════════
@@ -931,12 +935,13 @@ function renderAcessosTable(rows) {
       canApprove ? `<button class="btn-approve" onclick="updateAccess('${r['Email']}','aprovar')">✓ Aprovar</button>` : '',
       canReject  ? `<button class="btn-reject"  onclick="updateAccess('${r['Email']}','rejeitar')">✕ Rejeitar</button>` : ''
     ].join('');
+    const fmtDate = d => d ? new Date(d).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
     return `<tr>
       <td>${r['Email'] || ''}</td>
       <td>${r['Nome'] || ''}</td>
       <td>${badgeHtml}</td>
-      <td style="white-space:nowrap">${r['DataSolicitacao'] || ''}</td>
-      <td style="white-space:nowrap">${r['DataAprovacao'] || ''}</td>
+      <td style="white-space:nowrap">${fmtDate(r['DataSolicitacao'])}</td>
+      <td style="white-space:nowrap">${fmtDate(r['DataAprovacao'])}</td>
       <td style="white-space:nowrap">${actions}</td>
     </tr>`;
   }).join('');
