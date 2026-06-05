@@ -392,6 +392,37 @@
       margin-bottom: 18px;
     }
 
+    /* ── Role cards ── */
+    .roles-intro { font-size:.82rem; color:var(--muted); line-height:1.65; margin-bottom:22px; padding:14px 16px; background:var(--surface); border-radius:var(--r-soft); border-left:3px solid var(--accent); }
+    .roles-grid  { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .role-card   { border:1px solid var(--line); border-radius:var(--r-soft); overflow:hidden; display:flex; flex-direction:column; }
+    .role-header { display:flex; align-items:flex-start; gap:12px; padding:16px 16px 14px; }
+    .role-icon-wrap { font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    .role-info   { flex:1; min-width:0; }
+    .role-badge-top { font-size:.65rem; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:3px; }
+    .role-name   { font-size:.92rem; font-weight:700; line-height:1.2; }
+    .role-sub    { font-size:.7rem; color:var(--muted); margin-top:3px; line-height:1.35; }
+    .role-fit-badge {
+      flex-shrink:0; margin-left:6px;
+      padding:5px 10px; border-radius:var(--r-pill);
+      font-size:.8rem; font-weight:700; color:white; white-space:nowrap;
+    }
+    .role-fit-track { height:6px; background:var(--surface); }
+    .role-fit-fill  { height:100%; width:0; transition:width 1.4s cubic-bezier(.25,.8,.25,1); }
+    .role-desc { padding:12px 16px 8px; font-size:.78rem; color:var(--muted); line-height:1.55; border-top:1px solid var(--line); }
+    .role-why { padding:10px 16px 16px; flex:1; }
+    .role-why-label {
+      font-size:.65rem; text-transform:uppercase; letter-spacing:.1em;
+      color:var(--muted); font-weight:700; margin-bottom:8px;
+    }
+    .role-why ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+    .role-why li {
+      font-size:.76rem; color:var(--muted); line-height:1.5;
+      display:flex; gap:7px; align-items:flex-start;
+    }
+    .role-why li::before { content:'→'; color:var(--accent); font-weight:700; flex-shrink:0; margin-top:1px; }
+    @media (max-width:600px) { .roles-grid { grid-template-columns:1fr; } }
+
     /* ── Print ── */
     @media print {
       .site-header, .quiz-nav, .cta-card { display: none; }
@@ -1195,6 +1226,242 @@ function calcBeliefs() {
 }
 
 // ════════════════════════════════════════════════════
+// BEST ROLES ENGINE
+// ════════════════════════════════════════════════════
+function calcBestRoles(disc, jung, spranger, leadership, beliefs) {
+  const jStr = jung.map(d => d.winner).join('');
+  const dt   = Object.values(disc).reduce((a,b) => a+b, 0) || 1;
+  const dp   = { D: Math.round(disc.D/dt*100), I: Math.round(disc.I/dt*100), S: Math.round(disc.S/dt*100), C: Math.round(disc.C/dt*100) };
+  const sp3  = spranger.slice(0,3).map(s => s.name);
+  const lp   = leadership.primary; // 0 Diretivo 1 Treinador 2 Apoiador 3 Delegador
+
+  function sc(rules) {
+    let s = 0; rules.forEach(([c,p]) => { if (c) s += p; }); return Math.min(98, s);
+  }
+
+  const ROLES = [
+    {
+      id:'exec', name:'Liderança Executiva', sub:'CEO · Diretor Geral · C-Level', icon:'👑', color:'#7C3AED',
+      desc:'Comando estratégico e tomada de decisão de alto impacto. Exige visão sistêmica, responsabilização e capacidade de mover organizações.',
+      fit: sc([
+        [dp.D >= 35, 28], [dp.D >= 45, 14], [jStr.includes('E'), 8],
+        [jStr.includes('T') && jStr.includes('J'), 20], [jStr.includes('T') || jStr.includes('J'), 8],
+        [sp3.includes('Político'), 22], [sp3[0] === 'Político', 12],
+        [lp === 0 || lp === 3, 16], [beliefs.identidade.score >= 8, 10], [beliefs.identidade.score >= 6, 5]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.D >= 30) r.push(`DISC D ${dp.D}% — orientação natural a resultados, decisão rápida e tolerância ao risco`);
+        if (sp3.includes('Político')) r.push(`valor "Político"${sp3[0]==='Político'?' (1º valor)':' (top 3)'} — motivação genuína por impacto de alto nível e influência organizacional`);
+        if (jStr.includes('T') && jStr.includes('J')) r.push(`tipo ${jStr}: objetividade (T) + estrutura (J) = decisões firmes e bem fundamentadas`);
+        if (lp === 0) r.push(`estilo Diretivo — clareza de comando e alta responsabilização do time`);
+        if (lp === 3) r.push(`estilo Delegador — foca em visão e estratégia macro, confia no time para a execução`);
+        if (beliefs.identidade.score >= 8) r.push(`crença de identidade forte (${beliefs.identidade.score}/10) — se reconhece genuinamente como líder`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'biz', name:'Desenvolvimento de Negócios', sub:'Head Comercial · BizDev · Key Account', icon:'🤝', color:'#DC2626',
+      desc:'Abertura e expansão de oportunidades comerciais. Exige influência, persuasão e orientação a resultado financeiro concreto.',
+      fit: sc([
+        [dp.D >= 30, 20], [dp.D >= 20, 10], [dp.I >= 30, 20], [dp.I >= 20, 10],
+        [(dp.D + dp.I) >= 60, 14], [jStr.includes('E'), 18],
+        [sp3.includes('Econômico'), 22], [sp3[0] === 'Econômico', 10],
+        [sp3.includes('Político'), 10], [lp === 0 || lp === 1, 8]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.D >= 25 && dp.I >= 20) r.push(`combinação D${dp.D}% + I${dp.I}% — determinação para fechar negócios com persuasão e conexão genuína`);
+        else if (dp.D >= 28) r.push(`DISC D ${dp.D}% — força para superar objeções e fechar negócios sob pressão`);
+        else if (dp.I >= 28) r.push(`DISC I ${dp.I}% — carisma e influência que abre portas naturalmente`);
+        if (sp3.includes('Econômico')) r.push(`valor "Econômico"${sp3[0]==='Econômico'?' (1º)':''} — motivado por resultado financeiro tangível e crescimento de receita`);
+        if (jStr.includes('E')) r.push(`perfil Extrovertido (E) — energia em interações e construção contínua de relacionamentos`);
+        if (sp3.includes('Político')) r.push(`valor "Político" — interesse em influenciar organizações e construir posicionamento de mercado`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'mktg', name:'Marketing & Comunicação', sub:'CMO · Head de Marketing · Brand Strategist', icon:'📣', color:'#F59E0B',
+      desc:'Posicionamento, narrativa e engajamento de mercado. Exige criatividade, sensibilidade à percepção e capacidade de conectar emocionalmente.',
+      fit: sc([
+        [dp.I >= 35, 34], [dp.I >= 45, 10], [jStr.includes('E'), 12],
+        [jStr.includes('N'), 22], [jStr.includes('F'), 12],
+        [sp3.includes('Estético'), 28], [sp3[0] === 'Estético', 12],
+        [sp3.includes('Social'), 8]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.I >= 28) r.push(`DISC I ${dp.I}% — carisma, comunicação envolvente e capacidade natural de influenciar percepções`);
+        if (sp3.includes('Estético')) r.push(`valor "Estético"${sp3[0]==='Estético'?' (1º)':''} — atenção à experiência, narrativa visual e qualidade de apresentação`);
+        if (jStr.includes('N')) r.push(`perfil Intuitivo (N) — visão de possibilidades, tendências e posicionamento de marca a longo prazo`);
+        if (jStr.includes('F')) r.push(`perfil Sentimental (F) — sensibilidade ao impacto emocional das mensagens e à percepção do público`);
+        if (jStr.includes('E')) r.push(`perfil Extrovertido (E) — energia para criar, apresentar e engajar audiências diversas`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'rh', name:'Gestão de Pessoas', sub:'CHRO · Head de RH · People Partner', icon:'🫂', color:'#059669',
+      desc:'Desenvolvimento, cultura e engajamento de talentos. Exige escuta ativa, empatia estrutural e visão de longo prazo em pessoas.',
+      fit: sc([
+        [dp.S >= 35, 28], [dp.S >= 45, 10], [jStr.includes('F'), 24],
+        [jStr.includes('E'), 8],
+        [sp3.includes('Social'), 32], [sp3[0] === 'Social', 14],
+        [lp === 1 || lp === 2, 18], [lp === 1, 10],
+        [beliefs.merecimento.score >= 7, 5]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.S >= 28) r.push(`DISC S ${dp.S}% — estabilidade emocional, escuta genuína e cuidado consistente com as pessoas`);
+        if (sp3.includes('Social')) r.push(`valor "Social"${sp3[0]==='Social'?' (1º valor)':''} — significado profundo em servir e impactar vidas diretamente`);
+        if (jStr.includes('F')) r.push(`perfil Sentimental (F) — decisões baseadas no impacto humano, empatia como competência estratégica`);
+        if (lp === 1) r.push(`estilo Treinador — o desenvolvimento de pessoas é o seu diferencial natural de liderança`);
+        if (lp === 2) r.push(`estilo Apoiador — cria ambientes de segurança psicológica onde talentos florescem`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'ops', name:'Operações & Processos', sub:'COO · Head de Operações · Gestor de Processos', icon:'⚙️', color:'#64748B',
+      desc:'Eficiência, escala e confiabilidade operacional. Exige rigor em processos, controle de qualidade e execução consistente.',
+      fit: sc([
+        [dp.S >= 28, 16], [dp.C >= 28, 22], [(dp.S+dp.C) >= 55, 12],
+        [jStr.includes('S'), 18], [jStr.includes('J'), 22], [jStr.includes('T'), 8],
+        [sp3.includes('Econômico'), 8], [sp3.includes('Teórico'), 8], [lp === 0, 14]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.C >= 25) r.push(`DISC C ${dp.C}% — atenção a detalhes, controle de qualidade e intolerância com imprecisão`);
+        if (dp.S >= 25) r.push(`DISC S ${dp.S}% — consistência na execução, confiabilidade e estabilidade em alta demanda`);
+        if (jStr.includes('J')) r.push(`perfil Julgador (J) — planejamento rigoroso e prazo como compromisso inegociável`);
+        if (jStr.includes('S')) r.push(`perfil Sensação (S) — foco no concreto, no que funciona e em soluções comprovadas`);
+        if (lp === 0) r.push(`estilo Diretivo — capacidade de organizar recursos e responsabilizar equipes por metas`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'estrategia', name:'Estratégia & Consultoria', sub:'CSO · Consultor Estratégico · Advisor', icon:'🧭', color:'#0F3460',
+      desc:'Diagnóstico, modelagem e direcionamento de negócios. Exige visão sistêmica, pensamento analítico e capacidade de influenciar decisões de alto impacto.',
+      fit: sc([
+        [dp.D >= 25, 12], [dp.C >= 25, 18],
+        [jStr.includes('T'), 20], [jStr.includes('N'), 26], [jStr.includes('J'), 8],
+        [sp3.includes('Teórico'), 18], [sp3.includes('Político'), 18],
+        [sp3[0] === 'Teórico' || sp3[0] === 'Político', 12],
+        [lp === 3 || lp === 1, 8]
+      ]),
+      whyFn() {
+        const r = [];
+        if (jStr.includes('N') && jStr.includes('T')) r.push(`combinação NT em ${jStr} — visão sistêmica combinada com análise lógica estruturada`);
+        else if (jStr.includes('N')) r.push(`perfil Intuitivo (N) — enxerga padrões e possibilidades além do óbvio`);
+        if (sp3.includes('Teórico')) r.push(`valor "Teórico"${sp3[0]==='Teórico'?' (1º)':''} — necessidade de compreender profundamente antes de recomendar`);
+        if (sp3.includes('Político')) r.push(`valor "Político" — interesse em influenciar organizações e decisões de alto nível`);
+        if (dp.C >= 25) r.push(`DISC C ${dp.C}% — precisão analítica e rigor no diagnóstico de problemas complexos`);
+        if (dp.D >= 25) r.push(`DISC D ${dp.D}% — proatividade na proposta de soluções e senso de urgência estratégica`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'produto', name:'Produto & Inovação', sub:'Product Manager · Head de Produto · CTO', icon:'🚀', color:'#6366F1',
+      desc:'Criação e evolução de produtos e serviços. Exige visão de futuro, pensamento sistêmico e conexão entre negócio, tecnologia e usuário.',
+      fit: sc([
+        [dp.I >= 22, 12], [dp.D >= 22, 12],
+        [jStr.includes('N'), 28], [jStr.includes('T'), 12], [jStr.includes('P'), 16],
+        [sp3.includes('Político'), 12], [sp3.includes('Econômico'), 8], [sp3.includes('Teórico'), 16],
+        [lp === 3 || lp === 1, 12]
+      ]),
+      whyFn() {
+        const r = [];
+        if (jStr.includes('N')) r.push(`perfil Intuitivo (N) — cria onde outros não enxergam, pensa em possibilidades e futuros alternativos`);
+        if (jStr.includes('P')) r.push(`perfil Perceptivo (P) — adaptabilidade para pivotar e ajustar produto em ambientes incertos`);
+        if (sp3.includes('Teórico')) r.push(`valor "Teórico" — curiosidade intelectual que alimenta inovação constante de produto`);
+        if (dp.D >= 22 && dp.I >= 18) r.push(`D+I (${dp.D+dp.I}%) — iniciativa para criar e influenciar o mercado simultaneamente`);
+        if (lp === 3) r.push(`estilo Delegador — dá autonomia ao time técnico e mantém foco na visão estratégica`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'financas', name:'Finanças & Controladoria', sub:'CFO · Controller · Head Financeiro', icon:'📊', color:'#1D4ED8',
+      desc:'Gestão financeira, controle e planejamento de recursos. Exige rigor analítico, objetividade e visão de sustentabilidade econômica.',
+      fit: sc([
+        [dp.C >= 35, 30], [dp.C >= 45, 12],
+        [jStr.includes('S'), 18], [jStr.includes('T'), 22], [jStr.includes('J'), 18],
+        [sp3.includes('Econômico'), 26], [sp3[0] === 'Econômico', 10],
+        [sp3.includes('Teórico'), 8]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.C >= 30) r.push(`DISC C ${dp.C}% — rigor analítico, precisão e aversão natural a riscos e dados imprecisos`);
+        if (sp3.includes('Econômico')) r.push(`valor "Econômico"${sp3[0]==='Econômico'?' (1º)':''} — motivação por resultado financeiro e otimização de recursos`);
+        if (jStr.includes('T') && jStr.includes('J')) r.push(`tipo ${jStr}: objetividade (T) + organização (J) = tomada de decisão financeira rigorosa e confiável`);
+        if (jStr.includes('S')) r.push(`perfil Sensação (S) — foco nos dados históricos e evidências concretas para análises e projeções`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'ld', name:'Treinamento & Desenvolvimento', sub:'Head de L&D · Facilitador · Coach Executivo', icon:'🎓', color:'#D97706',
+      desc:'Formação, capacitação e desenvolvimento de pessoas e líderes. Exige comunicação envolvente, empatia pedagógica e prazer genuíno no crescimento dos outros.',
+      fit: sc([
+        [dp.I >= 26, 22], [dp.S >= 20, 12],
+        [jStr.includes('E'), 12], [jStr.includes('F'), 20],
+        [sp3.includes('Social'), 25], [sp3.includes('Teórico'), 12],
+        [lp === 1 || lp === 2, 20], [lp === 1, 12]
+      ]),
+      whyFn() {
+        const r = [];
+        if (lp === 1) r.push(`estilo Treinador — o desenvolvimento do potencial de cada pessoa é seu modo natural de liderar`);
+        if (lp === 2) r.push(`estilo Apoiador — cria segurança emocional que facilita aprendizado profundo e duradouro`);
+        if (sp3.includes('Social')) r.push(`valor "Social" — significado genuíno no crescimento e transformação de outras pessoas`);
+        if (dp.I >= 24) r.push(`DISC I ${dp.I}% — comunicação envolvente e energia que inspira e mantém pessoas engajadas`);
+        if (jStr.includes('F')) r.push(`perfil Sentimental (F) — sensibilidade ao estado emocional dos alunos e empatia pedagógica`);
+        if (sp3.includes('Teórico')) r.push(`valor "Teórico" — base de conhecimento sólida que dá profundidade e credibilidade ao ensino`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'cs', name:'Customer Success & Relacionamento', sub:'Head de CS · Account Manager · Pós-venda', icon:'🌟', color:'#10B981',
+      desc:'Fidelização, expansão e satisfação de clientes. Exige escuta empática, proatividade relacional e comprometimento com o sucesso do outro.',
+      fit: sc([
+        [dp.S >= 28, 22], [(dp.S+dp.I) >= 55, 12], [dp.I >= 22, 12],
+        [jStr.includes('F'), 22], [jStr.includes('E'), 12],
+        [sp3.includes('Social'), 28], [lp === 2 || lp === 1, 18]
+      ]),
+      whyFn() {
+        const r = [];
+        if (dp.S >= 25) r.push(`DISC S ${dp.S}% — paciência, consistência e cuidado genuíno que fideliza clientes`);
+        if (dp.I >= 20) r.push(`DISC I ${dp.I}% — energia relacional e capacidade de criar conexão rapidamente`);
+        if (sp3.includes('Social')) r.push(`valor "Social" — satisfação real em garantir o sucesso e bem-estar dos outros`);
+        if (jStr.includes('F')) r.push(`perfil Sentimental (F) — percebe necessidades não verbalizadas e age com empatia estruturada`);
+        if (lp === 2) r.push(`estilo Apoiador — constrói relações de longo prazo baseadas em confiança genuína`);
+        return r.slice(0,4);
+      }
+    },
+    {
+      id:'pesquisa', name:'Pesquisa & Análise', sub:'Research Lead · Analista Sênior · Data Analyst', icon:'🔬', color:'#475569',
+      desc:'Investigação profunda, síntese de dados e geração de insights. Exige concentração, rigor metodológico e prazer em compreender sistemas complexos.',
+      fit: sc([
+        [dp.C >= 30, 28], [dp.C >= 40, 10],
+        [jStr.includes('I'), 14], [jStr.includes('S'), 16],
+        [jStr.includes('T'), 22], [jStr.includes('J'), 12],
+        [sp3.includes('Teórico'), 32], [sp3[0] === 'Teórico', 14],
+        [lp === 3, 8]
+      ]),
+      whyFn() {
+        const r = [];
+        if (sp3.includes('Teórico')) r.push(`valor "Teórico"${sp3[0]==='Teórico'?' (1º valor)':''} — necessidade intrínseca de compreender profundamente, não apenas superficialmente`);
+        if (dp.C >= 28) r.push(`DISC C ${dp.C}% — precisão, método e tolerância zero com dados insuficientes ou análises rasas`);
+        if (jStr.includes('I')) r.push(`perfil Introvertido (I) — concentração profunda e trabalho analítico sustentado por horas`);
+        if (jStr.includes('T')) r.push(`perfil Pensamento (T) — raciocínio objetivo, estruturado e baseado em evidências verificáveis`);
+        if (jStr.includes('S')) r.push(`perfil Sensação (S) — foco nos dados concretos, históricos e padrões observáveis`);
+        return r.slice(0,4);
+      }
+    },
+  ];
+
+  return ROLES
+    .map(r => ({ ...r, score: r.fit, why: r.whyFn() }))
+    .sort((a,b) => b.fit - a.fit)
+    .slice(0,2);
+}
+
+// ════════════════════════════════════════════════════
 // BUILD RESULTS
 // ════════════════════════════════════════════════════
 function buildResults() {
@@ -1368,7 +1635,55 @@ function buildResults() {
     </div>
   `;
 
-  // 7. CTA
+  // 7. Best Roles
+  const bestRoles = calcBestRoles(disc, jung, spranger, leadership, beliefs);
+  stack.innerHTML += `
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-icon">💼</div>
+        <div>
+          <div class="r-title">Funções Ideais na Empresa</div>
+          <div class="r-sub">Síntese das 6 dimensões do seu perfil — DISC + Jung + Valores + Liderança</div>
+        </div>
+      </div>
+      <div class="roles-intro">
+        Com base no cruzamento de todas as dimensões do seu mapeamento, estas são as <strong>2 funções onde você tem o maior potencial de impacto natural</strong> — onde seu padrão de comportamento, valores reais e estilo de liderança somam, não competem.
+      </div>
+      <div class="roles-grid">
+        ${bestRoles.map((r,i) => `
+          <div class="role-card">
+            <div class="role-header" style="background:linear-gradient(135deg,${r.color}14,${r.color}04);border-left:3px solid ${r.color}">
+              <div class="role-icon-wrap">${r.icon}</div>
+              <div class="role-info">
+                ${i === 0 ? `<span class="role-badge-top">Nº 1 — Maior aderência</span>` : `<span class="role-badge-top" style="color:var(--muted)">Nº 2 — Alta aderência</span>`}
+                <div class="role-name">${r.name}</div>
+                <div class="role-sub">${r.sub}</div>
+              </div>
+              <div class="role-fit-badge" style="background:${r.color}">${r.fit}%</div>
+            </div>
+            <div class="role-fit-track">
+              <div class="role-fit-fill" style="background:${r.color}" data-w="${r.fit}"></div>
+            </div>
+            <div class="role-desc">${r.desc}</div>
+            <div class="role-why">
+              <div class="role-why-label">Por que você se encaixa</div>
+              <ul>
+                ${(r.why.length ? r.why : [`perfil ${jungType} e comportamento ${DISC_INFO[discPrimary].name} convergem para esta função`])
+                  .map(w => `<li>${w}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  setTimeout(() => {
+    document.querySelectorAll('.role-fit-fill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 80);
+
+  // 8. CTA
   stack.innerHTML += `
     <div class="cta-card">
       <p class="cta-eyebrow">Próximo passo</p>
