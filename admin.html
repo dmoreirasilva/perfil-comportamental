@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Perfil Comportamental | Instituto Diego Moreira</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:  #0A1628;
+      --bg:       #F8F6F1;
+      --surface:  #EDE8DF;
+      --accent:   #C9963D;
+      --text:     #0A1628;
+      --muted:    #6B7280;
+      --line:     #DDD8CF;
+      --white:    #FFFFFF;
+      --r-soft:   6px;
+      --r-card:   12px;
+      --r-pill:   999px;
+      --disc-D:   #DC2626;
+      --disc-I:   #F59E0B;
+      --disc-S:   #059669;
+      --disc-C:   #2563EB;
+      --anx-low:  #059669;
+      --anx-mid:  #D97706;
+      --anx-high: #DC2626;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--primary);
+      padding: 16px 0;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      color: var(--accent); font-size: 1rem; font-weight: 600; line-height: 1.2;
+    }
+    .logo-sub {
+      display: block; font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.4); font-size: 0.72rem; margin-top: 2px;
+    }
+    .admin-badge {
+      background: rgba(201,150,61,.15); border: 1px solid rgba(201,150,61,.3);
+      color: var(--accent); font-size: .72rem; font-weight: 600;
+      padding: 4px 12px; border-radius: var(--r-pill); letter-spacing:.06em;
+      text-transform: uppercase;
+    }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .btn-sm {
+      padding: 7px 16px; border-radius: var(--r-soft);
+      font-family: 'Inter', sans-serif; font-size: .8rem; font-weight: 500;
+      cursor: pointer; border: none; transition: opacity .2s;
+    }
+    .btn-sm:hover { opacity: .85; }
+    .btn-sm.accent { background: var(--accent); color: var(--primary); }
+    .btn-sm.ghost  { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+    .btn-sm.danger { background: #DC262622; color: #DC2626; border: 1px solid #DC262640; }
+
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Login / Setup ── */
+    .auth-wrap {
+      min-height: calc(100vh - 61px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .auth-card {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); padding: 40px; width: 100%; max-width: 480px;
+    }
+    .auth-eyebrow {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--accent); font-weight: 600; margin-bottom: 8px;
+    }
+    .auth-title { font-size: 1.6rem; margin-bottom: 8px; }
+    .auth-desc  { font-size: .88rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block; font-size: .82rem; font-weight: 600;
+      margin-bottom: 7px; color: var(--text);
+    }
+    .form-hint { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      background: var(--bg); border: 2px solid var(--line);
+      border-radius: var(--r-soft); font-family: 'Inter', sans-serif;
+      font-size: .9rem; color: var(--text); outline: none;
+      transition: border-color .18s;
+    }
+    .form-input:focus { border-color: var(--accent); background: var(--white); }
+    .form-input.mono { font-family: monospace; font-size: .82rem; }
+    .btn-full {
+      width: 100%; padding: 14px; border: none; border-radius: var(--r-soft);
+      font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 600;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-full.accent { background: var(--accent); color: var(--primary); }
+    .btn-full.accent:hover { opacity: .88; }
+    .error-msg {
+      background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626;
+      padding: 10px 14px; border-radius: var(--r-soft); font-size: .82rem;
+      margin-bottom: 16px; display: none;
+    }
+    .auth-footer {
+      margin-top: 20px; text-align: center;
+      font-size: .8rem; color: var(--muted);
+    }
+    .auth-footer a { color: var(--accent); text-decoration: none; cursor: pointer; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ── Setup Guide ── */
+    .setup-wrap { padding: 48px 0 80px; }
+    .setup-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .82rem; color: var(--muted); cursor: pointer;
+      margin-bottom: 28px; transition: color .18s;
+    }
+    .setup-back:hover { color: var(--text); }
+    .setup-title { font-size: 1.75rem; margin-bottom: 10px; }
+    .setup-desc  { font-size: .9rem; color: var(--muted); line-height: 1.65; margin-bottom: 36px; }
+    .step-list { display: grid; gap: 28px; }
+    .step-item { display: flex; gap: 16px; }
+    .step-num {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: var(--accent); color: var(--primary);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .88rem;
+    }
+    .step-body h4 { font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 600; margin-bottom: 5px; }
+    .step-body p  { font-size: .85rem; color: var(--muted); line-height: 1.65; }
+    .step-body a  { color: var(--accent); }
+    .code-block {
+      background: var(--primary); color: #E2E8F0;
+      border-radius: var(--r-soft); padding: 20px;
+      font-family: monospace; font-size: .78rem; line-height: 1.7;
+      white-space: pre; overflow-x: auto; margin-top: 14px; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(201,150,61,.2); border: 1px solid rgba(201,150,61,.4);
+      color: var(--accent); padding: 4px 12px; border-radius: var(--r-pill);
+      font-size: .72rem; font-family: 'Inter', sans-serif;
+      cursor: pointer; font-weight: 600; transition: background .18s;
+    }
+    .copy-btn:hover { background: rgba(201,150,61,.35); }
+    .info-box {
+      background: #FFF8EC; border: 1px solid #F59E0B40;
+      border-radius: var(--r-soft); padding: 14px 16px;
+      font-size: .83rem; color: var(--muted); line-height: 1.6; margin-top: 14px;
+    }
+
+    /* ── Dashboard ── */
+    .dash-wrap { padding: 36px 0 80px; }
+    .dash-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+    .dash-title { font-size: 1.5rem; }
+    .dash-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-dash {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border-radius: var(--r-soft);
+      font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 500;
+      cursor: pointer; transition: opacity .2s; border: none;
+    }
+    .btn-dash:hover { opacity: .85; }
+    .btn-dash.outline {
+      background: transparent; border: 1px solid var(--line); color: var(--text);
+    }
+    .btn-dash.accent { background: var(--accent); color: var(--primary); }
+
+    /* Stats cards */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); padding: 20px;
+    }
+    .stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .stat-value { font-size: 2rem; font-weight: 600; font-family: 'Playfair Display', serif; color: var(--text); line-height: 1; }
+    .stat-sub   { font-size: .75rem; color: var(--muted); margin-top: 5px; }
+
+    /* Controls */
+    .controls-row {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+      margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1; min-width: 220px; padding: 10px 14px;
+      background: var(--white); border: 1.5px solid var(--line);
+      border-radius: var(--r-soft); font-family: 'Inter', sans-serif;
+      font-size: .88rem; color: var(--text); outline: none;
+      transition: border-color .18s;
+    }
+    .search-box:focus { border-color: var(--accent); }
+    .filter-select {
+      padding: 10px 14px; background: var(--white); border: 1.5px solid var(--line);
+      border-radius: var(--r-soft); font-family: 'Inter', sans-serif;
+      font-size: .82rem; color: var(--text); cursor: pointer; outline: none;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    /* Table */
+    .table-wrap {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-card); overflow: hidden;
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr {
+      background: var(--surface); border-bottom: 1px solid var(--line);
+    }
+    .data-table th {
+      padding: 12px 16px; font-size: .72rem; font-weight: 600; text-align: left;
+      text-transform: uppercase; letter-spacing: .07em; color: var(--muted);
+      cursor: pointer; user-select: none; white-space: nowrap;
+    }
+    .data-table th:hover { color: var(--text); }
+    .data-table th .sort-icon { margin-left: 4px; opacity: .4; }
+    .data-table th.sorted .sort-icon { opacity: 1; }
+    .data-table td {
+      padding: 12px 16px; font-size: .85rem;
+      border-bottom: 1px solid var(--line); vertical-align: middle;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: #FAFAF8; }
+
+    /* Badges */
+    .badge-disc {
+      display: inline-block; padding: 3px 10px; border-radius: var(--r-pill);
+      font-size: .72rem; font-weight: 700;
+    }
+    .badge-disc.D { background: #DC262618; color: #DC2626; }
+    .badge-disc.I { background: #F59E0B18; color: #D97706; }
+    .badge-disc.S { background: #05966918; color: #059669; }
+    .badge-disc.C { background: #2563EB18; color: #2563EB; }
+    .badge-anx {
+      display: inline-block; padding: 3px 10px; border-radius: var(--r-pill);
+      font-size: .72rem; font-weight: 600;
+    }
+    .badge-anx.Leve         { background: #05966918; color: #059669; }
+    .badge-anx.Moderada     { background: #D9770618; color: #D97706; }
+    .badge-anx.Significativa { background: #DC262618; color: #DC2626; }
+    .badge-anx.Alta         { background: #7F1D1D22; color: #991B1B; }
+
+    .wa-link {
+      color: #059669; text-decoration: none; font-size: .82rem;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .wa-link:hover { text-decoration: underline; }
+
+    .btn-detail {
+      padding: 5px 13px; background: transparent; border: 1px solid var(--line);
+      border-radius: var(--r-soft); font-size: .75rem; font-family: 'Inter', sans-serif;
+      cursor: pointer; color: var(--text); transition: border-color .18s;
+    }
+    .btn-detail:hover { border-color: var(--accent); color: var(--accent); }
+
+    .empty-state {
+      padding: 60px 20px; text-align: center; color: var(--muted);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state p { font-size: .88rem; }
+
+    /* Pagination */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-top: 1px solid var(--line);
+      font-size: .82rem; color: var(--muted);
+    }
+    .page-btns { display: flex; gap: 6px; }
+    .page-btn {
+      padding: 5px 11px; border-radius: var(--r-soft);
+      border: 1px solid var(--line); background: transparent;
+      font-size: .78rem; cursor: pointer; font-family: 'Inter', sans-serif;
+      color: var(--text); transition: background .18s;
+    }
+    .page-btn:hover { background: var(--surface); }
+    .page-btn.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+    .page-btn:disabled { opacity: .35; cursor: default; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(10,22,40,.65);
+      z-index: 200; display: none; align-items: flex-start; justify-content: center;
+      padding: 40px 16px; overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg); border-radius: var(--r-card);
+      width: 100%; max-width: 680px;
+      animation: fadeUp .28s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-header {
+      background: var(--primary); padding: 28px 28px 24px;
+      border-radius: var(--r-card) var(--r-card) 0 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .modal-header h2 { color: white; font-size: 1.3rem; margin-bottom: 4px; }
+    .modal-header p  { color: rgba(255,255,255,.5); font-size: .8rem; }
+    .modal-close {
+      background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.6);
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      font-size: 1rem; transition: background .18s; flex-shrink: 0;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.18); color: white; }
+    .modal-body { padding: 24px 28px 32px; }
+    .modal-contact-row {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .contact-chip {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-pill); padding: 6px 14px;
+      font-size: .78rem; color: var(--muted);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .contact-chip strong { color: var(--text); }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-card {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--r-soft); padding: 16px;
+    }
+    .modal-card-title {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted); font-weight: 600; margin-bottom: 10px;
+    }
+    .modal-card.full { grid-column: 1 / -1; }
+    .mini-bar-row { display: grid; gap: 7px; }
+    .mini-bar-item { display: grid; grid-template-columns: 22px 1fr 30px; align-items: center; gap: 8px; }
+    .mini-bar-label { font-weight: 700; font-size: .82rem; }
+    .mini-bar-track { background: var(--surface); border-radius: var(--r-pill); height: 8px; overflow: hidden; }
+    .mini-bar-fill  { height: 100%; border-radius: var(--r-pill); }
+    .mini-bar-pct   { font-size: .72rem; color: var(--muted); text-align: right; }
+    .jung-big { font-size: 2.5rem; font-weight: 600; color: var(--accent); font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 6px; }
+    .jung-name { font-size: .82rem; color: var(--muted); margin-bottom: 10px; }
+    .dim-chip {
+      display: inline-block; padding: 3px 9px; border-radius: var(--r-pill);
+      background: var(--surface); border: 1px solid var(--line);
+      font-size: .72rem; margin: 3px 2px;
+    }
+    .spranger-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .spranger-rank { color: var(--accent); font-weight: 700; font-size: .88rem; width: 20px; }
+    .spranger-name { font-size: .82rem; flex: 1; }
+    .spranger-score { font-size: .75rem; color: var(--muted); }
+    .anx-big { font-size: 2.2rem; font-weight: 600; font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 4px; }
+    .belief-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .belief-mini-item { background: var(--surface); border-radius: var(--r-soft); padding: 10px; text-align: center; }
+    .belief-mini-val { font-size: 1.4rem; font-weight: 600; font-family: 'Playfair Display', serif; color: var(--accent); }
+    .belief-mini-lbl { font-size: .65rem; color: var(--muted); margin-top: 2px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* Loading */
+    .loading-wrap { padding: 80px 0; text-align: center; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid var(--line);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .7s linear infinite; margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: .88rem; color: var(--muted); }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .modal-card.full { grid-column: 1; }
+      .dash-head { flex-direction: column; align-items: flex-start; }
+      .controls-row { flex-direction: column; align-items: stretch; }
+      .search-box, .filter-select { width: 100%; }
+      .data-table th:nth-child(3),
+      .data-table td:nth-child(3),
+      .data-table th:nth-child(5),
+      .data-table td:nth-child(5) { display: none; }
+    }
+
+    /* DISC distribution chart */
+    .disc-chart { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .disc-bar-item { text-align: center; }
+    .disc-bar-track {
+      height: 60px; background: var(--surface); border-radius: 4px;
+      display: flex; align-items: flex-end; overflow: hidden; margin-bottom: 4px;
+    }
+    .disc-bar-fill { width: 100%; border-radius: 3px; transition: height 1s ease; }
+    .disc-bar-lbl { font-size: .7rem; font-weight: 700; }
+    .disc-bar-pct { font-size: .65rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="site-header">
+  <div class="container">
+    <div class="header-row">
+      <div>
+        <div class="logo-text">Instituto Diego Moreira<span class="logo-sub">Método RESET da Ansiedade</span></div>
+      </div>
+      <div class="header-actions">
+        <span class="admin-badge">Admin</span>
+        <button class="btn-sm ghost" id="btnSetup" onclick="showSetup()" style="display:none">⚙ Configuração</button>
+        <button class="btn-sm ghost" id="btnLogout" onclick="logout()" style="display:none">Sair</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ LOGIN ═══════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-eyebrow">Área Restrita</div>
+      <h2 class="auth-title">Painel do Administrador</h2>
+      <p class="auth-desc">Acesse os resultados do mapeamento comportamental. Configure primeiro o Google Apps Script para ativar a coleta de dados.</p>
+
+      <div class="error-msg" id="loginError"></div>
+
+      <div class="form-group">
+        <label class="form-label">URL do Google Apps Script</label>
+        <input type="url" id="inputUrl" class="form-input mono" placeholder="https://script.google.com/macros/s/...">
+        <p class="form-hint">A URL gerada ao implantar o script como web app.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Token de acesso</label>
+        <input type="password" id="inputToken" class="form-input" placeholder="Seu token secreto">
+        <p class="form-hint">O valor de ADMIN_TOKEN definido no script.</p>
+      </div>
+      <button class="btn-full accent" onclick="doLogin()">Entrar no painel</button>
+
+      <div class="auth-footer">
+        Ainda não configurou? <a onclick="showSetup()">Veja o guia de configuração →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SETUP GUIDE ═══════════════════════ -->
+<div id="screen-setup" class="screen">
+  <div class="setup-wrap">
+    <div class="container">
+      <div class="setup-back" onclick="showLogin()">← Voltar ao login</div>
+      <h2 class="setup-title">Guia de Configuração</h2>
+      <p class="setup-desc">Configure o Google Apps Script em 5 passos para ativar a coleta e visualização dos resultados.</p>
+
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Crie uma planilha no Google Sheets</h4>
+            <p>Acesse <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> e crie uma planilha nova. Dê o nome que quiser, ex: <em>"Perfil Comportamental — Resultados"</em>.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Abra o Editor de Apps Script</h4>
+            <p>Na planilha, clique em <strong>Extensões → Apps Script</strong>. Uma nova aba vai abrir com o editor de código.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Cole o código abaixo e troque o token</h4>
+            <p>Apague tudo que está no editor e cole o código abaixo. <strong>Troque o valor de ADMIN_TOKEN</strong> por uma senha de sua escolha.</p>
+            <div class="code-block" id="scriptCode">
+const ADMIN_TOKEN = 'TROQUE-ESTA-SENHA'; // ← defina sua senha aqui
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName('Resultados');
+    if (!sheet) {
+      sheet = ss.insertSheet('Resultados');
+      sheet.appendRow([
+        'Data/Hora','Nome','E-mail','WhatsApp',
+        'DISC D','DISC I','DISC S','DISC C','DISC Primário',
+        'Tipo Jung','Spranger 1°','Spranger 2°','Spranger 3°',
+        'Liderança','Liderança Scores',
+        'Ansiedade %','Ansiedade Nível',
+        'Crença Capacidade','Crença Merecimento',
+        'Crença Identidade','Crença Abundância'
+      ]);
+    }
+    sheet.appendRow([
+      new Date(data.timestamp).toLocaleString('pt-BR'),
+      data.name, data.email, data.whatsapp,
+      data.disc_D, data.disc_I, data.disc_S, data.disc_C, data.disc_primary,
+      data.jung_type,
+      data.spranger_1, data.spranger_2, data.spranger_3,
+      data.leadership_style, data.leadership_scores,
+      data.anxiety_pct, data.anxiety_level,
+      data.beliefs_capacidade, data.beliefs_merecimento,
+      data.beliefs_identidade, data.beliefs_abundancia
+    ]);
+    return ContentService.createTextOutput('OK');
+  } catch(err) {
+    return ContentService.createTextOutput('Error: ' + err.message);
+  }
+}
+
+function doGet(e) {
+  const token = e.parameter ? e.parameter.token : '';
+  if (token !== ADMIN_TOKEN) {
+    return ContentService.createTextOutput(
+      JSON.stringify({error: 'Token inválido'})
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('Resultados');
+  if (!sheet || sheet.getLastRow() < 2) {
+    return ContentService.createTextOutput(
+      JSON.stringify({data: []})
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0];
+  const rows = values.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = row[i]; });
+    return obj;
+  });
+  return ContentService.createTextOutput(
+    JSON.stringify({data: rows})
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+            <button class="copy-btn" onclick="copyScript()">Copiar</button>
+            </div>
+            <div class="info-box">⚠️ Salve o token que você escolheu — você vai precisar dele para entrar no painel admin.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Implante como Web App</h4>
+            <p>Clique em <strong>Implantar → Nova implantação</strong>. Em "Tipo", selecione <strong>App da Web</strong>. Configure:</p>
+            <ul style="margin: 10px 0 0 18px; font-size:.85rem; color:var(--muted); line-height:1.8">
+              <li><strong>Executar como:</strong> Eu (sua conta Google)</li>
+              <li><strong>Quem tem acesso:</strong> Qualquer pessoa</li>
+            </ul>
+            <p style="margin-top:10px">Clique em <strong>Implantar</strong> e copie a URL gerada.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Configure o quiz para enviar dados</h4>
+            <p>Abra o arquivo <code style="background:var(--surface);padding:2px 6px;border-radius:4px">docs/perfil-comportamental/index.html</code> e localize a linha:</p>
+            <div class="code-block" style="margin-top:10px">const WEBHOOK_URL = 'SEU_WEBHOOK_URL_AQUI';</div>
+            <p style="margin-top:10px">Substitua <code style="background:var(--surface);padding:2px 6px;border-radius:4px">SEU_WEBHOOK_URL_AQUI</code> pela URL do passo 4.</p>
+            <div class="info-box">Após isso, toda vez que alguém completar o quiz, os dados vão para sua planilha automaticamente.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px">
+        <button class="btn-full accent" onclick="showLogin()" style="max-width:320px">Pronto — entrar no painel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DASHBOARD ═══════════════════════ -->
+<div id="screen-dash" class="screen">
+  <div class="dash-wrap">
+    <div class="container">
+
+      <!-- Head -->
+      <div class="dash-head">
+        <div>
+          <h2 class="dash-title">Resultados do Mapeamento</h2>
+          <p style="font-size:.85rem;color:var(--muted);margin-top:4px" id="lastRefresh"></p>
+        </div>
+        <div class="dash-actions">
+          <button class="btn-dash outline" onclick="loadData()">↻ Atualizar</button>
+          <button class="btn-dash outline" onclick="exportCSV()">↓ Exportar CSV</button>
+          <button class="btn-dash accent" onclick="window.print()">Imprimir</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+          <div class="stat-label">Total de respondentes</div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-sub" id="statTotalSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">DISC mais frequente</div>
+          <div class="stat-value" id="statDiscPrimary" style="color:var(--accent)">—</div>
+          <div class="stat-sub" id="statDiscSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ansiedade média</div>
+          <div class="stat-value" id="statAnxiety">—</div>
+          <div class="stat-sub" id="statAnxietySub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Esta semana</div>
+          <div class="stat-value" id="statWeek">—</div>
+          <div class="stat-sub">novos respondentes</div>
+        </div>
+      </div>
+
+      <!-- DISC distribution -->
+      <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:20px 24px;margin-bottom:20px" id="discChartCard">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:14px">Distribuição DISC</div>
+        <div class="disc-chart" id="discChart"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <input type="text" class="search-box" id="searchInput" placeholder="Buscar por nome, e-mail ou WhatsApp..." oninput="applyFilters()">
+        <select class="filter-select" id="filterDisc" onchange="applyFilters()">
+          <option value="">Todos os perfis DISC</option>
+          <option value="D">D — Dominante</option>
+          <option value="I">I — Influente</option>
+          <option value="S">S — Estável</option>
+          <option value="C">C — Criterioso</option>
+        </select>
+        <select class="filter-select" id="filterAnx" onchange="applyFilters()">
+          <option value="">Todos os níveis de ansiedade</option>
+          <option value="Leve">Leve</option>
+          <option value="Moderada">Moderada</option>
+          <option value="Significativa">Significativa</option>
+          <option value="Alta">Alta</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <div id="loadingArea" class="loading-wrap" style="display:none">
+          <div class="spinner"></div>
+          <p class="loading-text">Carregando dados...</p>
+        </div>
+        <table class="data-table" id="dataTable">
+          <thead>
+            <tr>
+              <th onclick="sortBy('Data/Hora')">Data <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('Nome')">Nome <span class="sort-icon">↕</span></th>
+              <th>WhatsApp</th>
+              <th onclick="sortBy('DISC Primário')">DISC <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('Tipo Jung')">Jung <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('Ansiedade %')">Ansiedade <span class="sort-icon">↕</span></th>
+              <th onclick="sortBy('Liderança')">Liderança <span class="sort-icon">↕</span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="8">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p>Nenhum dado ainda. Configure o Apps Script e aguarde as primeiras respostas.</p>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+        <div class="pagination" id="paginationRow" style="display:none">
+          <span id="paginationInfo"></span>
+          <div class="page-btns" id="paginationBtns"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MODAL ═══════════════════════ -->
+<div class="modal-overlay" id="profileModal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalName">—</h2>
+        <p id="modalDate">—</p>
+      </div>
+      <button class="modal-close" onclick="closeModal(null)">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let allRows = [];
+let filteredRows = [];
+let currentPage = 1;
+const PAGE_SIZE = 15;
+let sortColumn = 'Data/Hora';
+let sortAsc = false;
+
+const DISC_INFO = {
+  D: { name: 'Dominante',  color: '#DC2626' },
+  I: { name: 'Influente',  color: '#F59E0B' },
+  S: { name: 'Estável',    color: '#059669' },
+  C: { name: 'Criterioso', color: '#2563EB' }
+};
+
+const JUNG_NAMES = {
+  INTJ:'Arquiteto',INTP:'Lógico',ENTJ:'Comandante',ENTP:'Debatedor',
+  INFJ:'Visionário',INFP:'Mediador',ENFJ:'Protagonista',ENFP:'Ativista',
+  ISTJ:'Logístico',ISFJ:'Defensor',ESTJ:'Executivo',ESFJ:'Cônsul',
+  ISTP:'Virtuoso',ISFP:'Aventureiro',ESTP:'Empreendedor',ESFP:'Animador'
+};
+
+// ════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function showLogin() { showScreen('login'); }
+function showSetup() {
+  showScreen('setup');
+  document.getElementById('btnSetup').style.display = 'none';
+  document.getElementById('btnLogout').style.display = 'none';
+}
+
+function logout() {
+  sessionStorage.removeItem('admin_url');
+  sessionStorage.removeItem('admin_token');
+  allRows = [];
+  showScreen('login');
+  document.getElementById('btnSetup').style.display = 'none';
+  document.getElementById('btnLogout').style.display = 'none';
+}
+
+// ════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════
+function doLogin() {
+  const url   = document.getElementById('inputUrl').value.trim();
+  const token = document.getElementById('inputToken').value.trim();
+  const err   = document.getElementById('loginError');
+
+  if (!url || !token) {
+    err.textContent = 'Preencha a URL e o token para continuar.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!url.startsWith('https://script.google.com')) {
+    err.textContent = 'A URL deve ser de um Google Apps Script (script.google.com).';
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  sessionStorage.setItem('admin_url', url);
+  sessionStorage.setItem('admin_token', token);
+  openDashboard();
+}
+
+function openDashboard() {
+  document.getElementById('btnSetup').style.display = 'block';
+  document.getElementById('btnLogout').style.display = 'block';
+  showScreen('dash');
+  loadData();
+}
+
+// Auto-login if credentials saved
+window.addEventListener('load', () => {
+  const url   = sessionStorage.getItem('admin_url');
+  const token = sessionStorage.getItem('admin_token');
+  if (url && token) {
+    document.getElementById('inputUrl').value   = url;
+    document.getElementById('inputToken').value = token;
+    openDashboard();
+  }
+});
+
+// ════════════════════════════════════════════════════
+// DATA FETCH
+// ════════════════════════════════════════════════════
+async function loadData() {
+  const url   = sessionStorage.getItem('admin_url');
+  const token = sessionStorage.getItem('admin_token');
+  if (!url || !token) return;
+
+  document.getElementById('loadingArea').style.display = 'block';
+  document.getElementById('dataTable').style.display  = 'none';
+
+  try {
+    const res = await fetch(`${url}?token=${encodeURIComponent(token)}`);
+    const json = await res.json();
+
+    if (json.error) {
+      throw new Error(json.error);
+    }
+
+    allRows = json.data || [];
+    document.getElementById('lastRefresh').textContent =
+      'Última atualização: ' + new Date().toLocaleString('pt-BR');
+
+    renderStats();
+    renderDiscChart();
+    applyFilters();
+  } catch (err) {
+    alert('Erro ao carregar dados: ' + err.message + '\n\nVerifique a URL e o token.');
+  } finally {
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('dataTable').style.display  = '';
+  }
+}
+
+// ════════════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════════════
+function renderStats() {
+  const total = allRows.length;
+  document.getElementById('statTotal').textContent = total;
+
+  if (total === 0) {
+    document.getElementById('statTotalSub').textContent = 'nenhuma resposta ainda';
+    document.getElementById('statDiscPrimary').textContent = '—';
+    document.getElementById('statAnxiety').textContent = '—';
+    document.getElementById('statWeek').textContent = '0';
+    return;
+  }
+
+  // DISC primary distribution
+  const discCount = {D:0,I:0,S:0,C:0};
+  allRows.forEach(r => { const d = r['DISC Primário']; if (d) discCount[d] = (discCount[d]||0)+1; });
+  const topDisc = Object.entries(discCount).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('statDiscPrimary').textContent = topDisc[0];
+  document.getElementById('statDiscSub').textContent =
+    `${DISC_INFO[topDisc[0]].name} — ${Math.round(topDisc[1]/total*100)}% dos respondentes`;
+
+  // Anxiety average
+  const anx = allRows.map(r => Number(r['Ansiedade %'])||0).filter(v=>v>0);
+  const avgAnx = anx.length ? Math.round(anx.reduce((a,b)=>a+b,0)/anx.length) : 0;
+  document.getElementById('statAnxiety').textContent = avgAnx + '%';
+
+  // Determine level label for avg
+  let axLbl = avgAnx <= 28 ? 'Leve' : avgAnx <= 52 ? 'Moderada' : avgAnx <= 74 ? 'Significativa' : 'Alta';
+  document.getElementById('statAnxietySub').textContent = 'nível ' + axLbl;
+
+  // This week
+  const oneWeekAgo = new Date(); oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const weekCount = allRows.filter(r => {
+    if (!r['Data/Hora']) return false;
+    const parts = r['Data/Hora'].toString().split(/[/ :,]/);
+    // Brazilian format: dd/mm/yyyy
+    if (parts.length >= 3) {
+      const d = new Date(`${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`);
+      return d >= oneWeekAgo;
+    }
+    return false;
+  }).length;
+  document.getElementById('statWeek').textContent = weekCount;
+  document.getElementById('statTotalSub').textContent = total === 1 ? 'respondente' : 'respondentes';
+}
+
+// ════════════════════════════════════════════════════
+// DISC CHART
+// ════════════════════════════════════════════════════
+function renderDiscChart() {
+  const total = allRows.length;
+  const discCount = {D:0,I:0,S:0,C:0};
+  allRows.forEach(r => { const d = r['DISC Primário']; if (d && discCount[d] !== undefined) discCount[d]++; });
+
+  const maxVal = Math.max(...Object.values(discCount), 1);
+  const container = document.getElementById('discChart');
+  container.innerHTML = '';
+
+  Object.entries(discCount).forEach(([letter, count]) => {
+    const pct = total > 0 ? Math.round(count/total*100) : 0;
+    const barH = Math.round((count/maxVal)*100);
+    const info = DISC_INFO[letter];
+    container.innerHTML += `
+      <div class="disc-bar-item">
+        <div class="disc-bar-track">
+          <div class="disc-bar-fill" style="height:${barH}%;background:${info.color}20;border-top:3px solid ${info.color}"></div>
+        </div>
+        <div class="disc-bar-lbl" style="color:${info.color}">${letter}</div>
+        <div class="disc-bar-pct">${count} (${pct}%)</div>
+      </div>
+    `;
+  });
+}
+
+// ════════════════════════════════════════════════════
+// FILTER + SORT
+// ════════════════════════════════════════════════════
+function applyFilters() {
+  const search    = document.getElementById('searchInput').value.toLowerCase();
+  const filterD   = document.getElementById('filterDisc').value;
+  const filterA   = document.getElementById('filterAnx').value;
+
+  filteredRows = allRows.filter(r => {
+    const matchSearch = !search ||
+      (r['Nome']     || '').toLowerCase().includes(search) ||
+      (r['E-mail']   || '').toLowerCase().includes(search) ||
+      (r['WhatsApp'] || '').toLowerCase().includes(search);
+    const matchDisc = !filterD || r['DISC Primário'] === filterD;
+    const matchAnx  = !filterA || r['Ansiedade Nível'] === filterA;
+    return matchSearch && matchDisc && matchAnx;
+  });
+
+  // Sort
+  filteredRows.sort((a, b) => {
+    let va = a[sortColumn] || '';
+    let vb = b[sortColumn] || '';
+    if (sortColumn === 'Ansiedade %') { va = Number(va); vb = Number(vb); }
+    const cmp = String(va).localeCompare(String(vb), 'pt-BR', { numeric: true });
+    return sortAsc ? cmp : -cmp;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+function sortBy(col) {
+  if (sortColumn === col) { sortAsc = !sortAsc; }
+  else { sortColumn = col; sortAsc = false; }
+  // Update header icons
+  document.querySelectorAll('.data-table th').forEach(th => th.classList.remove('sorted'));
+  applyFilters();
+}
+
+// ════════════════════════════════════════════════════
+// TABLE
+// ════════════════════════════════════════════════════
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page  = filteredRows.slice(start, start + PAGE_SIZE);
+
+  if (filteredRows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>${allRows.length === 0 ? 'Nenhum dado ainda. Aguarde as primeiras respostas.' : 'Nenhum resultado para os filtros aplicados.'}</p>
+      </div>
+    </td></tr>`;
+    document.getElementById('paginationRow').style.display = 'none';
+    return;
+  }
+
+  tbody.innerHTML = page.map((r, i) => {
+    const disc    = r['DISC Primário'] || '—';
+    const jung    = r['Tipo Jung']     || '—';
+    const anxPct  = r['Ansiedade %']   || '—';
+    const anxLvl  = r['Ansiedade Nível'] || '';
+    const lead    = r['Liderança']     || '—';
+    const phone   = (r['WhatsApp'] || '').replace(/\D/g,'');
+    const waHref  = phone ? `https://wa.me/55${phone}` : '#';
+
+    return `
+      <tr>
+        <td style="color:var(--muted);white-space:nowrap">${formatDate(r['Data/Hora'])}</td>
+        <td style="font-weight:500">${r['Nome'] || '—'}</td>
+        <td>
+          ${phone
+            ? `<a class="wa-link" href="${waHref}" target="_blank">📱 ${r['WhatsApp']}</a>`
+            : `<span style="color:var(--muted)">${r['WhatsApp']||'—'}</span>`}
+        </td>
+        <td>${disc !== '—' ? `<span class="badge-disc ${disc}">${disc} — ${(DISC_INFO[disc]||{}).name||''}</span>` : '—'}</td>
+        <td>${jung !== '—' ? `<span title="${JUNG_NAMES[jung]||''}">${jung}</span>` : '—'}</td>
+        <td>
+          ${anxPct !== '—'
+            ? `<span class="badge-anx ${anxLvl}">${anxPct}% · ${anxLvl}</span>`
+            : '—'}
+        </td>
+        <td style="font-size:.82rem">${lead}</td>
+        <td><button class="btn-detail" onclick='openModal(${JSON.stringify(r).replace(/'/g,"\\'")})''>Ver perfil</button></td>
+      </tr>
+    `;
+  }).join('');
+
+  // Pagination
+  const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
+  const pagRow = document.getElementById('paginationRow');
+  pagRow.style.display = totalPages > 1 || filteredRows.length > 0 ? 'flex' : 'none';
+
+  document.getElementById('paginationInfo').textContent =
+    `${start + 1}–${Math.min(start + PAGE_SIZE, filteredRows.length)} de ${filteredRows.length} respondentes`;
+
+  const btns = document.getElementById('paginationBtns');
+  btns.innerHTML = `
+    <button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''}>←</button>
+    ${Array.from({length: totalPages}, (_,i) => `
+      <button class="page-btn ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</button>
+    `).join('')}
+    <button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage===totalPages?'disabled':''}>→</button>
+  `;
+}
+
+function goPage(p) {
+  const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  renderTable();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function formatDate(val) {
+  if (!val) return '—';
+  const s = String(val);
+  if (s.includes('/')) return s.split(',')[0]; // already pt-BR
+  const d = new Date(s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('pt-BR');
+}
+
+// ════════════════════════════════════════════════════
+// MODAL — FULL PROFILE
+// ════════════════════════════════════════════════════
+function openModal(row) {
+  document.getElementById('modalName').textContent = row['Nome'] || '—';
+  document.getElementById('modalDate').textContent = 'Respondido em: ' + formatDate(row['Data/Hora']);
+
+  const disc  = row['DISC Primário'] || '?';
+  const discColor = (DISC_INFO[disc]||{}).color || '#888';
+  const jung  = row['Tipo Jung'] || '—';
+  const anxPct = Number(row['Ansiedade %']) || 0;
+  const anxLvl = row['Ansiedade Nível'] || '';
+  const anxColor = anxLvl === 'Leve' ? '#059669' : anxLvl === 'Moderada' ? '#D97706' : '#DC2626';
+
+  const discD = Number(row['DISC D'])||0;
+  const discI = Number(row['DISC I'])||0;
+  const discS = Number(row['DISC S'])||0;
+  const discC = Number(row['DISC C'])||0;
+  const discTotal = discD + discI + discS + discC || 1;
+
+  const sp1 = row['Spranger 1°'] || '—';
+  const sp2 = row['Spranger 2°'] || '—';
+  const sp3 = row['Spranger 3°'] || '—';
+
+  const lead = row['Liderança'] || '—';
+  const leadScores = (row['Liderança Scores']||'0,0,0,0').toString().split(',').map(Number);
+  const leadTotal = leadScores.reduce((a,b)=>a+b,0) || 1;
+  const leadNames = ['Diretivo','Treinador','Apoiador','Delegador'];
+
+  const bCap = Number(row['Crença Capacidade'])||0;
+  const bMer = Number(row['Crença Merecimento'])||0;
+  const bIde = Number(row['Crença Identidade'])||0;
+  const bAbu = Number(row['Crença Abundância'])||0;
+
+  const phone = (row['WhatsApp']||'').replace(/\D/g,'');
+  const waLink = phone ? `https://wa.me/55${phone}` : null;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-contact-row">
+      <span class="contact-chip">📧 <strong>${row['E-mail']||'—'}</strong></span>
+      ${phone ? `<a class="contact-chip" href="https://wa.me/55${phone}" target="_blank" style="text-decoration:none;color:inherit">📱 <strong>${row['WhatsApp']}</strong></a>` : ''}
+    </div>
+
+    <div class="modal-grid">
+
+      <!-- DISC -->
+      <div class="modal-card">
+        <div class="modal-card-title">🎯 Perfil DISC</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-bottom:8px">Primário: <strong style="color:${discColor}">${disc} — ${(DISC_INFO[disc]||{}).name||''}</strong></div>
+        <div class="mini-bar-row">
+          ${[['D',discD,'#DC2626'],['I',discI,'#F59E0B'],['S',discS,'#059669'],['C',discC,'#2563EB']].map(([l,v,c])=>`
+            <div class="mini-bar-item">
+              <span class="mini-bar-label" style="color:${c}">${l}</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${Math.round(v/discTotal*100)}%;background:${c}"></div></div>
+              <span class="mini-bar-pct">${Math.round(v/discTotal*100)}%</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Jung -->
+      <div class="modal-card">
+        <div class="modal-card-title">🧠 Tipo Psicológico (Jung)</div>
+        <div class="jung-big">${jung}</div>
+        <div class="jung-name">${JUNG_NAMES[jung] || ''}</div>
+        <div>
+          ${jung.split('').map((l,i)=>{
+            const pairs = [['E','I'],['S','N'],['T','F'],['J','P']];
+            if (i >= pairs.length) return '';
+            const lbl = l === pairs[i][0]
+              ? ['Extrovertido','Sensação','Pensamento','Julgamento'][i]
+              : ['Introvertido','Intuição','Sentimento','Percepção'][i];
+            return `<span class="dim-chip">${l} ${lbl}</span>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Spranger -->
+      <div class="modal-card">
+        <div class="modal-card-title">⚖️ Valores (Spranger)</div>
+        <div class="spranger-item"><span class="spranger-rank">1°</span><span class="spranger-name">${sp1}</span></div>
+        <div class="spranger-item"><span class="spranger-rank">2°</span><span class="spranger-name">${sp2}</span></div>
+        <div class="spranger-item"><span class="spranger-rank">3°</span><span class="spranger-name">${sp3}</span></div>
+      </div>
+
+      <!-- Liderança -->
+      <div class="modal-card">
+        <div class="modal-card-title">👑 Estilo de Liderança</div>
+        <div style="font-size:.82rem;font-weight:600;margin-bottom:10px">${lead}</div>
+        <div class="mini-bar-row">
+          ${leadNames.map((n,i)=>`
+            <div class="mini-bar-item" style="grid-template-columns:60px 1fr 30px">
+              <span class="mini-bar-label" style="font-size:.7rem;font-weight:500;color:var(--muted)">${n}</span>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${Math.round((leadScores[i]||0)/leadTotal*100)}%;background:var(--accent)"></div></div>
+              <span class="mini-bar-pct">${Math.round((leadScores[i]||0)/leadTotal*100)}%</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Ansiedade -->
+      <div class="modal-card">
+        <div class="modal-card-title">🔥 Mapa da Ansiedade</div>
+        <div class="anx-big" style="color:${anxColor}">${anxPct}%</div>
+        <span class="badge-anx ${anxLvl}" style="margin-bottom:10px;display:inline-block">${anxLvl}</span>
+        <div style="background:var(--surface);border-radius:var(--r-pill);height:10px;overflow:hidden">
+          <div style="height:100%;border-radius:var(--r-pill);background:${anxColor};width:${anxPct}%"></div>
+        </div>
+      </div>
+
+      <!-- Crenças -->
+      <div class="modal-card">
+        <div class="modal-card-title">🧩 Crenças e Identidade</div>
+        <div class="belief-mini-grid">
+          <div class="belief-mini-item"><div class="belief-mini-val">${bCap}<span style="font-size:.9rem;color:var(--muted)">/10</span></div><div class="belief-mini-lbl">Capacidade</div></div>
+          <div class="belief-mini-item"><div class="belief-mini-val">${bMer}<span style="font-size:.9rem;color:var(--muted)">/10</span></div><div class="belief-mini-lbl">Merecimento</div></div>
+          <div class="belief-mini-item"><div class="belief-mini-val">${bIde}<span style="font-size:.9rem;color:var(--muted)">/10</span></div><div class="belief-mini-lbl">Identidade</div></div>
+          <div class="belief-mini-item"><div class="belief-mini-val">${bAbu}<span style="font-size:.9rem;color:var(--muted)">/20</span></div><div class="belief-mini-lbl">Abundância</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      ${waLink ? `<a href="${waLink}?text=Ol%C3%A1%20${encodeURIComponent(row['Nome']||'')}%2C%20vi%20seu%20perfil%20comportamental%20e%20gostaria%20de%20conversar%20sobre%20ele." target="_blank" class="btn-dash accent" style="text-decoration:none">💬 Chamar no WhatsApp</a>` : ''}
+      <button class="btn-dash outline" onclick="closeModal(null)">Fechar</button>
+    </div>
+  `;
+
+  document.getElementById('profileModal').classList.add('open');
+}
+
+function closeModal(evt) {
+  if (evt && evt.target !== document.getElementById('profileModal')) return;
+  document.getElementById('profileModal').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════
+// EXPORT CSV
+// ════════════════════════════════════════════════════
+function exportCSV() {
+  if (!filteredRows.length) { alert('Nenhum dado para exportar.'); return; }
+
+  const headers = Object.keys(filteredRows[0]);
+  const rows = filteredRows.map(r =>
+    headers.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(',')
+  );
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `perfil-comportamental-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ════════════════════════════════════════════════════
+// COPY SCRIPT
+// ════════════════════════════════════════════════════
+function copyScript() {
+  const code = document.getElementById('scriptCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('screen-login').classList.contains('active')) {
+    doLogin();
+  }
+});
+</script>
+
+</body>
+</html>

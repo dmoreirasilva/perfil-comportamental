@@ -330,6 +330,26 @@
     .cta-card p  { color: rgba(255,255,255,.65); font-size: .9rem; line-height: 1.7; margin-bottom: 28px; max-width: 560px; margin-left: auto; margin-right: auto; }
     .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
+    /* ── Lead form ── */
+    .lead-form { max-width: 480px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block; font-size: .82rem; font-weight: 600;
+      margin-bottom: 7px; color: var(--text);
+    }
+    .form-input {
+      width: 100%; padding: 12px 14px;
+      background: var(--white); border: 2px solid var(--line);
+      border-radius: var(--r-soft); font-family: 'Inter', sans-serif;
+      font-size: .925rem; color: var(--text);
+      transition: border-color .18s; outline: none;
+    }
+    .form-input:focus    { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--muted); }
+    .form-privacy {
+      font-size: .75rem; color: var(--muted); margin-bottom: 24px; line-height: 1.5;
+    }
+
     /* ── Print ── */
     @media print {
       .site-header, .quiz-nav, .cta-card { display: none; }
@@ -421,8 +441,40 @@
     </p>
 
     <div class="btn-row">
-      <button class="btn-accent" onclick="startQuiz()">Iniciar mapeamento →</button>
+      <button class="btn-accent" onclick="showLeadForm()">Iniciar mapeamento →</button>
       <button class="btn-outline" onclick="loadSaved()">Continuar onde parei</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ LEAD FORM ═══════════════════════ -->
+<div id="screen-lead" class="screen">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Antes de começar</div>
+      <h2 class="section-title">Suas informações</h2>
+      <p class="section-desc">Preencha seus dados para que Diego Moreira possa personalizar sua análise e entrar em contato com você após o mapeamento.</p>
+    </div>
+
+    <div class="lead-form">
+      <div class="form-group">
+        <label class="form-label">Nome completo *</label>
+        <input type="text" id="leadName" class="form-input" placeholder="Seu nome completo" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail *</label>
+        <input type="email" id="leadEmail" class="form-input" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">WhatsApp com DDD *</label>
+        <input type="tel" id="leadWhatsapp" class="form-input" placeholder="(32) 99999-9999" autocomplete="tel">
+      </div>
+      <p class="form-privacy">🔒 Seus dados são utilizados exclusivamente pelo Instituto Diego Moreira. Nenhuma informação é compartilhada com terceiros.</p>
+      <div class="error-bar" id="leadError">Preencha todos os campos para continuar.</div>
+      <div class="btn-row" style="margin-top:24px">
+        <button class="btn-accent" onclick="validateAndStart()">Iniciar mapeamento →</button>
+        <button class="btn-outline" onclick="show('intro')">← Voltar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -456,6 +508,11 @@
 </div>
 
 <script>
+// ════════════════════════════════════════════════════
+// CONFIGURATION — cole a URL do Apps Script aqui
+// ════════════════════════════════════════════════════
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzhjucxgpyQDC7DBFz9aJqdki4IQIrkeqQI_MgBmoOoNc052eOF6WJL9RUqCMxRe76S/exec';
+
 // ════════════════════════════════════════════════════
 // DATA
 // ════════════════════════════════════════════════════
@@ -627,6 +684,8 @@ const JUNG_DESC = {
 // ════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════
+let leadData = { name: '', email: '', whatsapp: '' };
+
 let state = {
   section: 0,
   answers: {
@@ -646,6 +705,31 @@ let state = {
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
+}
+
+function showLeadForm() {
+  show('lead');
+}
+
+function validateAndStart() {
+  const name     = document.getElementById('leadName').value.trim();
+  const email    = document.getElementById('leadEmail').value.trim();
+  const whatsapp = document.getElementById('leadWhatsapp').value.trim();
+  const errBar   = document.getElementById('leadError');
+
+  if (!name || !email || !whatsapp) {
+    errBar.textContent = 'Preencha todos os campos para continuar.';
+    errBar.style.display = 'block';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errBar.textContent = 'Digite um e-mail válido.';
+    errBar.style.display = 'block';
+    return;
+  }
+  errBar.style.display = 'none';
+  leadData = { name, email, whatsapp };
+  startQuiz();
 }
 
 function startQuiz() {
@@ -892,6 +976,8 @@ function buildResults() {
   const anxiety    = calcAnxiety();
   const beliefs    = calcBeliefs();
 
+  submitResults(disc, jung, spranger, leadership, anxiety, beliefs);
+
   const jungType = jung.map(d => d.winner).join('');
   const discTotal = Object.values(disc).reduce((a,b)=>a+b,0);
   const discPrimary = Object.entries(disc).sort((a,b)=>b[1]-a[1])[0][0];
@@ -1064,6 +1150,41 @@ function buildResults() {
   `;
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitResults(disc, jung, spranger, leadership, anxiety, beliefs) {
+  if (!WEBHOOK_URL || WEBHOOK_URL === 'SEU_WEBHOOK_URL_AQUI') return;
+
+  const jungType   = jung.map(d => d.winner).join('');
+  const discTotal  = Object.values(disc).reduce((a,b) => a+b, 0) || 1;
+  const discPrimary = Object.entries(disc).sort((a,b) => b[1]-a[1])[0][0];
+
+  const payload = {
+    timestamp:          new Date().toISOString(),
+    name:               leadData.name,
+    email:              leadData.email,
+    whatsapp:           leadData.whatsapp,
+    disc_D:             disc.D, disc_I: disc.I, disc_S: disc.S, disc_C: disc.C,
+    disc_primary:       discPrimary,
+    jung_type:          jungType,
+    spranger_1:         spranger[0]?.name || '',
+    spranger_2:         spranger[1]?.name || '',
+    spranger_3:         spranger[2]?.name || '',
+    leadership_style:   leadership.info.name,
+    leadership_scores:  leadership.scores.join(','),
+    anxiety_pct:        anxiety.pct,
+    anxiety_level:      anxiety.level,
+    beliefs_capacidade: beliefs.capacidade.score,
+    beliefs_merecimento:beliefs.merecimento.score,
+    beliefs_identidade: beliefs.identidade.score,
+    beliefs_abundancia: beliefs.abundancia.score
+  };
+
+  fetch(WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  }).catch(() => {});
 }
 
 function doShare() {
