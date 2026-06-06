@@ -1457,6 +1457,9 @@ function buildResults() {
   const anxiety    = calcAnxiety();
   const beliefs    = calcBeliefs();
 
+  // Salva globalmente para o botão "Gerar áudio personalizado"
+  window._perfilCompleto = { disc, jung, spranger, leadership, anxiety, beliefs };
+
   submitResults(disc, jung, spranger, leadership, anxiety, beliefs);
 
   const jungType = jung.map(d => d.winner).join('');
@@ -1673,6 +1676,7 @@ function buildResults() {
       <div class="cta-row">
         <a class="btn-accent" href="https://wa.me/5532984254542?text=Ol%C3%A1%20Diego%2C%20acabei%20de%20fazer%20o%20mapeamento%20comportamental%20e%20quero%20entender%20o%20que%20ele%20revela." target="_blank">Quero marcar minha reunião estratégica →</a>
         <button class="btn-outline light" onclick="doShare()">Compartilhar resultado</button>
+        <button class="btn-outline light" onclick="copiarPerfilParaAudio()">🎧 Gerar áudio personalizado</button>
         <button class="btn-outline light" onclick="window.print()">Salvar como PDF</button>
       </div>
     </div>
@@ -1684,11 +1688,11 @@ function buildResults() {
 function submitResults(disc, jung, spranger, leadership, anxiety, beliefs) {
   if (!WEBHOOK_URL || WEBHOOK_URL === 'SEU_WEBHOOK_URL_AQUI') return;
 
-  const jungType   = jung.map(d => d.winner).join('');
-  const discTotal  = Object.values(disc).reduce((a,b) => a+b, 0) || 1;
+  const jungType    = jung.map(d => d.winner).join('');
   const discPrimary = Object.entries(disc).sort((a,b) => b[1]-a[1])[0][0];
 
   const payload = {
+    action:             'resultado',
     timestamp:          new Date().toISOString(),
     name:               leadData.name,
     email:              leadData.email,
@@ -1709,12 +1713,46 @@ function submitResults(disc, jung, spranger, leadership, anxiety, beliefs) {
     beliefs_abundancia: beliefs.abundancia.score
   };
 
-  fetch(WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(payload)
-  }).catch(() => {});
+  // Salva localmente antes de enviar — garante recuperação se conexão cair
+  localStorage.setItem('reset_perfil_pendente', JSON.stringify(payload));
+
+  _enviarResultado(payload, 0);
 }
+
+async function _enviarResultado(payload, tentativa) {
+  const MAX = 4;
+  try {
+    const res  = await fetch(WEBHOOK_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload)
+    });
+    const text = await res.text();
+    if (text.includes('"success"')) {
+      localStorage.removeItem('reset_perfil_pendente');
+      return;
+    }
+    throw new Error('Resposta inesperada: ' + text.slice(0, 80));
+  } catch (err) {
+    if (tentativa < MAX) {
+      setTimeout(() => _enviarResultado(payload, tentativa + 1), 3000 * (tentativa + 1));
+    }
+    // Falha silenciosa após MAX tentativas — dado fica em localStorage para recuperação
+  }
+}
+
+// Reenvio automático de resultado pendente (roda ao carregar a página)
+(function reenviarPendente() {
+  const raw = localStorage.getItem('reset_perfil_pendente');
+  if (!raw) return;
+  try {
+    const payload = JSON.parse(raw);
+    // Só tenta se o dado é recente (últimas 24h)
+    const ts = new Date(payload.timestamp);
+    if (Date.now() - ts.getTime() > 86400000) { localStorage.removeItem('reset_perfil_pendente'); return; }
+    _enviarResultado(payload, 0);
+  } catch(e) { localStorage.removeItem('reset_perfil_pendente'); }
+})();
 
 function doShare() {
   if (navigator.share) {
@@ -1722,6 +1760,39 @@ function doShare() {
   } else {
     navigator.clipboard.writeText(window.location.href).then(() => alert('Link copiado para a área de transferência.'));
   }
+}
+
+function copiarPerfilParaAudio() {
+  const p = window._perfilCompleto;
+  if (!p) { alert('Perfil ainda não calculado.'); return; }
+  const { disc, jung, spranger, leadership, anxiety, beliefs } = p;
+
+  const jungType = jung.map(d => d.winner).join('');
+  const discPrimary = Object.entries(disc).sort((a, b) => b[1] - a[1])[0][0];
+
+  const payload = JSON.stringify({
+    name: leadData.name || '',
+    email: leadData.email || '',
+    disc_primary: discPrimary,
+    disc_D: disc.D, disc_I: disc.I, disc_S: disc.S, disc_C: disc.C,
+    jung_type: jungType,
+    spranger_1: spranger[0]?.name || '',
+    spranger_2: spranger[1]?.name || '',
+    spranger_3: spranger[2]?.name || '',
+    leadership_style: leadership.info.name,
+    anxiety_pct: anxiety.pct,
+    anxiety_level: anxiety.level,
+    beliefs_capacidade: beliefs.capacidade.score,
+    beliefs_merecimento: beliefs.merecimento.score,
+    beliefs_identidade: beliefs.identidade.score,
+    beliefs_abundancia: beliefs.abundancia.score,
+  }, null, 2);
+
+  navigator.clipboard.writeText(payload).then(() => {
+    alert('Perfil copiado! Agora abra http://localhost:7791/perfil, cole o JSON e gere o áudio.');
+  }).catch(() => {
+    prompt('Copie o JSON abaixo:', payload);
+  });
 }
 </script>
 </body>
