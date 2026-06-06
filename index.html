@@ -1679,6 +1679,9 @@ function buildResults() {
         <button class="btn-outline light" onclick="copiarPerfilParaAudio()">🎧 Gerar áudio personalizado</button>
         <button class="btn-outline light" onclick="window.print()">Salvar como PDF</button>
       </div>
+      <div id="envio-status" style="margin-top:16px;font-size:13px;color:rgba(255,255,255,0.7);text-align:center">
+        ⏳ Enviando seus resultados…
+      </div>
     </div>
   `;
 
@@ -1720,7 +1723,8 @@ function submitResults(disc, jung, spranger, leadership, anxiety, beliefs) {
 }
 
 async function _enviarResultado(payload, tentativa) {
-  const MAX = 4;
+  const MAX   = 4;
+  const $status = document.getElementById('envio-status');
   try {
     const res  = await fetch(WEBHOOK_URL, {
       method:  'POST',
@@ -1730,14 +1734,24 @@ async function _enviarResultado(payload, tentativa) {
     const text = await res.text();
     if (text.includes('"success"')) {
       localStorage.removeItem('reset_perfil_pendente');
+      if ($status) $status.innerHTML = '✅ Resultados enviados com sucesso.';
       return;
     }
-    throw new Error('Resposta inesperada: ' + text.slice(0, 80));
+    throw new Error('resposta: ' + text.slice(0, 60));
   } catch (err) {
     if (tentativa < MAX) {
+      if ($status) $status.innerHTML = `⏳ Enviando… (tentativa ${tentativa + 2}/${MAX + 1})`;
       setTimeout(() => _enviarResultado(payload, tentativa + 1), 3000 * (tentativa + 1));
+    } else {
+      // Todas as tentativas falharam — exibe fallback com link WhatsApp
+      const nome  = encodeURIComponent(payload.name  || '');
+      const disc  = encodeURIComponent(`DISC: D${payload.disc_D} I${payload.disc_I} S${payload.disc_S} C${payload.disc_C} | Jung: ${payload.jung_type} | Ansiedade: ${payload.anxiety_pct}%`);
+      const waUrl = `https://wa.me/5532984254542?text=Ol%C3%A1+Diego%2C+terminei+o+mapeamento+mas+houve+um+problema+no+envio.+Meu+nome+%C3%A9+${nome}.+${disc}`;
+      if ($status) $status.innerHTML =
+        `⚠️ Problema ao enviar automaticamente. ` +
+        `<a href="${waUrl}" target="_blank" style="color:#C9963D;font-weight:700">` +
+        `Clique aqui para confirmar com Diego via WhatsApp →</a>`;
     }
-    // Falha silenciosa após MAX tentativas — dado fica em localStorage para recuperação
   }
 }
 
