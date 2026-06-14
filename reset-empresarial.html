@@ -574,8 +574,8 @@
 </footer>
 
 <script>
-  // ── URL do Apps Script (trocar após deploy) ──
-  const GAS_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+  // ── FormSubmit.co — envia direto para o email do Diego sem backend ──
+  const FORM_ENDPOINT = "https://formsubmit.co/ajax/d.moreira.silva2010@gmail.com";
 
   document.getElementById("lead-form").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -590,35 +590,45 @@
     const desafios = [...form.querySelectorAll('input[name="desafio"]:checked')]
                       .map(cb => cb.value).join(", ");
 
+    const nome     = form.nome.value.trim();
+    const empresa  = form.empresa.value.trim();
+    const emailLead = form.email.value.trim();
+    const whatsapp = form.whatsapp.value.trim();
+
     const payload = {
-      action:       "lead_corporativo",
-      nome:         form.nome.value.trim(),
-      cargo:        form.cargo.value.trim(),
-      empresa:      form.empresa.value.trim(),
-      colaboradores: form.colaboradores.value,
-      email:        form.email.value.trim(),
-      whatsapp:     form.whatsapp.value.trim(),
-      desafios:     desafios || "Não informado",
-      modalidade:   form.modalidade.value || "Não informado",
-      mensagem:     form.mensagem.value.trim() || "—",
-      timestamp:    new Date().toISOString()
+      // Campos visíveis no email
+      "Nome":          nome,
+      "Cargo":         form.cargo.value.trim(),
+      "Empresa":       empresa,
+      "Colaboradores": form.colaboradores.value,
+      "Email":         emailLead,
+      "WhatsApp":      whatsapp,
+      "Desafios":      desafios || "Não informado",
+      "Modalidade":    form.modalidade.value || "Não informado",
+      "Mensagem":      form.mensagem.value.trim() || "—",
+      "Data":          new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
+      // Configurações do FormSubmit
+      "_subject":      "🏢 Novo Lead Corporativo — " + empresa + " | RESET Empresarial",
+      "_replyto":      emailLead,
+      "_template":     "table",
+      "_captcha":      "false"
     };
 
     try {
-      const resp = await fetch(GAS_URL, {
+      const resp = await fetch(FORM_ENDPOINT, {
         method:  "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body:    JSON.stringify(payload)
       });
       const result = await resp.json();
 
-      if (result.success) {
+      if (result.success === "true" || result.success === true) {
         status.className    = "ok";
         status.style.display = "block";
         status.innerHTML    = "✅ Recebido! Diego entrará em contato em até 24 horas.";
         form.reset();
       } else {
-        throw new Error(result.error || "Erro desconhecido");
+        throw new Error(result.message || "Erro desconhecido");
       }
     } catch (err) {
       status.className    = "err";
