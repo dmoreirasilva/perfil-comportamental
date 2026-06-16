@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perfil Comportamental — Instituto Diego Moreira</title>
-  <meta name="description" content="Mapeie seu perfil comportamental completo: DISC, Jung, Spranger, Liderança e Mapa da Ansiedade exclusivo do Método RESET.">
+  <title>Diagnóstico de Ansiedade Gratuito — Instituto Diego Moreira</title>
+  <meta name="description" content="Descubra como a ansiedade sabota sua liderança. Diagnóstico comportamental gratuito em 8 minutos. Diego Moreira, hipnoterapeuta clínico para executivos.">
+
+  <!-- Google Ads Global Site Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-9557233046"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-9557233046', { allow_enhanced_conversions: true });
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ── Tokens ── */
@@ -1735,6 +1744,21 @@ async function _enviarResultado(payload, tentativa) {
     if (text.includes('"success"')) {
       localStorage.removeItem('reset_perfil_pendente');
       if ($status) $status.innerHTML = '✅ Resultados enviados com sucesso.';
+      // ── Conversão Google Ads ──────────────────────────────────────────
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'conversion', {
+          send_to : 'AW-9557233046/LABEL_AQUI',
+          value   : 1000.0,
+          currency: 'BRL'
+        });
+        gtag('event', 'generate_lead', {
+          currency: 'BRL',
+          value   : 1000.0,
+          event_category: 'Lead',
+          event_label   : 'diagnostico_completo'
+        });
+      }
+      // ─────────────────────────────────────────────────────────────────
       return;
     }
     throw new Error('resposta: ' + text.slice(0, 60));
