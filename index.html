@@ -3,17 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diagnóstico de Ansiedade Gratuito — Instituto Diego Moreira</title>
-  <meta name="description" content="Descubra como a ansiedade sabota sua liderança. Diagnóstico comportamental gratuito em 8 minutos. Diego Moreira, hipnoterapeuta clínico para executivos.">
-
-  <!-- Google Ads Global Site Tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-9557233046"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-9557233046', { allow_enhanced_conversions: true });
-  </script>
+  <title>Perfil Comportamental — Instituto Diego Moreira</title>
+  <meta name="description" content="Mapeie seu perfil comportamental completo: DISC, Jung, Spranger, Liderança e Mapa da Ansiedade exclusivo do Método RESET.">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ── Tokens ── */
@@ -1680,7 +1671,7 @@ function buildResults() {
       <h2>Seu perfil está <em>mapeado</em>.<br>E agora?</h2>
       <p>
         O Método RESET da Ansiedade foi desenvolvido por Diego Moreira — ex-Major do Exército que liderou mais de 50 homens, passou pelo burnout e encontrou o caminho de volta — para líderes que já construíram resultados mas carregam padrões inconscientes que limitam o próximo nível.<br><br>
-        <strong>100% de certeza de resultado.</strong> Agende uma conversa gratuita para entender o que o seu mapa revela.
+        <strong>100% de certeza de resultado.</strong> Agende uma conversa para entender o que o seu mapa revela.
       </p>
       <div class="cta-row">
         <a class="btn-accent" href="https://wa.me/5532984254542?text=Ol%C3%A1%20Diego%2C%20acabei%20de%20fazer%20o%20mapeamento%20comportamental%20e%20quero%20entender%20o%20que%20ele%20revela." target="_blank">Quero marcar minha reunião estratégica →</a>
@@ -1744,21 +1735,6 @@ async function _enviarResultado(payload, tentativa) {
     if (text.includes('"success"')) {
       localStorage.removeItem('reset_perfil_pendente');
       if ($status) $status.innerHTML = '✅ Resultados enviados com sucesso.';
-      // ── Conversão Google Ads ──────────────────────────────────────────
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'conversion', {
-          send_to : 'AW-9557233046/LABEL_AQUI',
-          value   : 1000.0,
-          currency: 'BRL'
-        });
-        gtag('event', 'generate_lead', {
-          currency: 'BRL',
-          value   : 1000.0,
-          event_category: 'Lead',
-          event_label   : 'diagnostico_completo'
-        });
-      }
-      // ─────────────────────────────────────────────────────────────────
       return;
     }
     throw new Error('resposta: ' + text.slice(0, 60));
